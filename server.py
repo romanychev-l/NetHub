@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, make_response
+from flask_cors import CORS
 from pymongo import MongoClient
-
 import sys
 # insert at 1, 0 is the script path (or '' in REPL)
 sys.path.insert(1, 'bot')
@@ -8,7 +8,7 @@ sys.path.insert(1, 'bot')
 import config
 
 app = Flask(__name__)
-
+CORS(app, resources={r'/*': {'origins': '*'}})
 
 mongo_pass = config.mongo_pass
 mongo_db = config.mongo_db
@@ -71,4 +71,4 @@ if __name__ == '__main__':
         port='7777',
         debug=True,
         threaded=True,
-     )
+    )
