@@ -28,11 +28,11 @@ def get_home():
         for group in groups_data:
             groups.append(group)
 
-        categories = {}
+        categories = [[],[],[],[],[],[],[],[],[],[]]
         for group in groups:
-            categories[group['category']] = [group]
+            categories[int(group['category'])].append(group)
 
-        return jsonify({'top': groups, 'categories': categories})
+        return jsonify({'top': groups[:10], 'categories': categories})
     except:
         return jsonify({'server': 'error'}), 400
 
