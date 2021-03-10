@@ -1,5 +1,5 @@
-category = {
-    'Knowledge': [
+categories = [
+    {'Knowledge': [
         'Space',
         'Philosophy',
         'Biology',
@@ -11,8 +11,8 @@ category = {
         'Math',
         'Science',
         'Covid-19'
-    ],
-    'Tech': [
+    ]},
+    {'Tech': [
         'Product',
         'Startups',
         'Marketing',
@@ -24,8 +24,8 @@ category = {
         'Angel Investing',
         'Venture Capital',
         'VR/AR'
-    ],
-    'Language': [
+    ]},
+    {'Language': [
         'Russian',
         'Hindi',
         'French',
@@ -36,8 +36,8 @@ category = {
         'Spanish',
         'Mandarin',
         'Indonesian'
-    ],
-    'Life': [
+    ]},
+    {'Life': [
         'Weddings',
         'Traveling',
         'Pregnancy',
@@ -46,8 +46,8 @@ category = {
         'Parenting',
         'Dating',
         'Support'
-    ],
-    'Wellness': [
+    ]},
+    {'Wellness': [
         'Veganism',
         'Health',
         'Meditation',
@@ -58,8 +58,8 @@ category = {
         'Medicine',
         'Fitness',
         'Weights'
-    ],
-    'Hanging out': [
+    ]},
+    {'Hanging out': [
         '¯\*(ツ)*/¯',
         'Chill vibes',
         'Coworking',
@@ -68,8 +68,8 @@ category = {
         'Bring a Drink',
         'Welcome Newbies',
         'PTR'
-    ],
-    'Identity': [
+    ]},
+    {'Identity': [
         'Millenials',
         'Latino',
         'Women',
@@ -83,8 +83,8 @@ category = {
         'South Asian',
         'East Asian',
         'Indiegenous'
-    ],
-    'Entertainment': [
+    ]},
+    {'Entertainment': [
         'Podcasts',
         'Perfomances',
         'Music',
@@ -100,8 +100,8 @@ category = {
         'Movies',
         'Celebrities',
         'Anime & Manga'
-    ],
-    'Sports': [
+    ]},
+    {'Sports': [
         'Golf',
         'Soccer',
         'Cycling',
@@ -112,8 +112,8 @@ category = {
         'BasketBall',
         'baseball',
         'football'
-    ],
-    'Arts': [
+    ]},
+    {'Arts': [
         'Photography',
         'Beauty',
         'Architecture',
@@ -126,8 +126,8 @@ category = {
         'Design',
         'Dance',
         'Theater'
-    ],
-    'Hustle': [
+    ]},
+    {'Hustle': [
         'Entrepreneurship',
         'Real Estate',
         'Instagram',
@@ -137,8 +137,8 @@ category = {
         'Stocks',
         'Clubhouse',
         'TikTok'
-    ],
-    'World affairs': [
+    ]},
+    {'World affairs': [
         'current events',
         'Social issues',
         'Geopolitics',
@@ -146,8 +146,8 @@ category = {
         'U.S. Politics',
         'Markets',
         'Climate'
-    ],
-    'Faith': [
+    ]},
+    {'Faith': [
         'Sikhism',
         'Spirituality',
         'Islam',
@@ -158,5 +158,5 @@ category = {
         'Taoism',
         'Hinduism',
         'Buddhism',
-    ]
-}
+    ]}
+]
