@@ -2,11 +2,10 @@ token = '1100850399:AAHbKuOIbWeGFR7OUsMEHBgoqbf1weX2X9o'
 
 port = 7776
 
-path = '/ch_bot/'
+path = '/nethub_test/'
 
-mongo_db_name = 'ch_bot'
-mongo_db_name_itm = 'in_the_moment'
+server_port = 7777
 
-channel_name = '@spbu_ads_test'
+mongo_db_name = 'nethub_test'
 
 bot_id = 1100850399
