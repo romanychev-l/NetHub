@@ -20,7 +20,6 @@ link = link.format("Leonid", mongo_pass, mongo_db)
 client = MongoClient(link, connect=False)
 db = client[config.mongo_db_name]
 
-
 def correct_view(obj):
     res = {}
     res['id'] = obj['chat_id']
