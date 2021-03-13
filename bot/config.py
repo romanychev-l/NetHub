@@ -15,3 +15,5 @@ mongo_db = 'AnnouncementsPUNK'
 channel_name = f.channel_name
 
 my_chat_id = 248603604
+
+bot_id = f.bot_id

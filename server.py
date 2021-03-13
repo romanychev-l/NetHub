@@ -33,15 +33,12 @@ def correct_view(obj):
     status = obj['status']
     res['status'] = status
     if status == 'offline':
-        res['date'] = obj['date']
+        print(obj['date'])
+        res['date'] = (obj['date'] - 3600)* 1000
 
-    res['subcategories'] = []
+    res['subcategories'] = obj['subcategories']
     category_id = obj['category_id']
     res['category_id'] = category_id
-
-    for subcat in obj['category'][category_id]['subcategories']:
-        if subcat['status']:
-            res['subcategories'].append(subcat['name'])
 
     return res
 

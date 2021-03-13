@@ -9,3 +9,4 @@ mongo_db_name_itm = 'in_the_moment'
 
 channel_name = '@spbu_ads_test'
 
+bot_id = 1100850399

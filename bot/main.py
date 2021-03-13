@@ -1,5 +1,6 @@
 import config
 import messages
+import texts
 import requests
 import base64
 import json
@@ -10,10 +11,13 @@ import pymongo
 from pymongo import MongoClient
 from multiprocessing import Process
 from datetime import datetime
+from contextlib import suppress
 
 from aiogram import Bot, Dispatcher, executor, types
+from aiogram.utils.markdown import text, bold, italic, code, pre
 import asyncio
 from aiogram.utils.executor import start_webhook
+from aiogram.utils.exceptions import MessageNotModified
 
 from aiogram.utils.helper import Helper, HelperMode, ListItem
 
@@ -70,7 +74,39 @@ class TestStates(Helper):
 OK = '✅'
 NOK = '❌'
 
-async def base_categories_keyboard():
+
+languages = {}
+
+
+async def get_msg(msg, text):
+    global languages
+    if msg.chat.id in languages:
+        code = languages[msg.chat.id]
+    else:
+        code = msg['from']['language_code']
+        languages[msg.chat.id] = code
+
+    if code == 'ru':
+        return messages.messages['ru'][text]
+    else:
+        return messages.messages['en'][text]
+
+
+async def get_text(msg, o, t):
+    # o - first var, t - second var
+    global languages
+    if msg.chat.id in languages:
+        code = languages[msg.chat.id]
+    else:
+        code = msg['from']['language_code']
+        languages[msg.chat.id] = code
+    if code == 'ru':
+        return texts.text[o]['ru'][t]
+    else:
+        return texts.text[o]['en'][t]
+
+
+async def base_categories_keyboard(msg):
     keyboard = types.InlineKeyboardMarkup()
     index = 100
     '''
@@ -98,8 +134,10 @@ async def base_categories_keyboard():
         else:
             keyboard.add(but0)
 
-
-    but = types.InlineKeyboardButton(text='Завершить', callback_data='Завершить')
+    but = types.InlineKeyboardButton(
+        text=await get_text(msg, 'buttons', 'complete'),
+        callback_data='Завершить'
+    )
     keyboard.add(but)
 
     return keyboard
@@ -116,6 +154,12 @@ async def base_categories():
     return result
 
 
+async def change_state(msg, num):
+    print('change_state')
+    state = dp.current_state(chat=msg.chat.id)
+    await state.set_state(TestStates.all()[num])
+
+
 async def check_chat(msg):
     chat_id = msg.chat.id
     if chat_id < 0:
@@ -123,7 +167,7 @@ async def check_chat(msg):
     else:
         await bot.send_message(
             chat_id,
-            'Добавьте бота в чат, чтобы использовать его'
+            await get_msg(msg, 'check_chat')
         )
         return True
 
@@ -140,10 +184,26 @@ async def get_admins(chat_id):
     result = []
     admins = await bot.get_chat_administrators(chat_id)
     for admin in admins:
-        #print(admin)
         if admin['user']['is_bot'] == False:
-            result.append(admin['user']['first_name'] + ' ' + admin['user']['last_name'])
+            full_name = admin['user']['first_name']
+            if 'last_name' in admin['user']:
+                 full_name += ' ' + admin['user']['last_name']
+            result.append(full_name)
     return result
+
+
+async def check_bot_privilege(msg):
+    admins = await bot.get_chat_administrators(msg.chat.id)
+    for admin in admins:
+        if admin['user']['id'] == config.bot_id:
+            if admin['status'] != 'administrator' or admin['can_invite_users'] != True:
+                await bot.send_message(
+                    msg.chat.id,
+                    await get_msg(msg, 'check_bot_privilege')
+                )
+                return True
+            break
+    return False
 
 
 async def get_participants(chat_id):
@@ -156,40 +216,28 @@ async def get_participants(chat_id):
     return [admins, members]
 
 
-async def get_keyboard(chat_id, index):
+
+async def get_keyboard(msg, index):
+    chat_id = msg.chat.id
     keyboard = types.InlineKeyboardMarkup()
     if chat_id < 0:
         group = db.groups.find_one({'chat_id' : str(chat_id)})
-        group_categories = group['category']
-        obj = group_categories[index // 100 - 1]
-
+        group_categories = group['subcategories']
+        subcat = list(categories_module.categories[index // 100 - 1].values())[0]
         if index % 100 == 0:
             i = 1
             j = 0
-            subcat = obj['subcategories']
             while j < len(subcat):
-                text = subcat[j]['name']
-                if subcat[j]['status']:
-                    text = OK + ' ' + text
-                else:
-                    text = NOK + ' ' + text
-
                 but0 = types.InlineKeyboardButton(
-                    text=text,
+                    text=NOK + ' ' + subcat[j],
                     callback_data=str(index + i)
                 )
                 i += 1
                 j += 1
 
                 if j < len(subcat):
-                    text = subcat[j]['name']
-                    if subcat[j]['status']:
-                        text = OK + ' ' + text
-                    else:
-                        text = NOK + ' ' + text
-
                     but1 = types.InlineKeyboardButton(
-                        text=text,
+                        text=NOK + ' ' + subcat[j],
                         callback_data=str(index + i)
                     )
                     keyboard.row(but0, but1)
@@ -202,18 +250,19 @@ async def get_keyboard(chat_id, index):
             status = 0
             i = 1
             j = 0
-            subcat = obj['subcategories']
             while j < len(subcat):
-                text = subcat[j]['name']
+                text = subcat[j]
                 if index % 100 == i:
-                    if subcat[j]['status']:
+                    if subcat[j] in group_categories:
                         text = NOK + ' ' + text
                         status = 0
+                        group_categories.erase(subcat[j])
                     else:
                         text = OK + ' ' + text
                         status = 1
+                        group_categories.append(subcat[j])
                 else:
-                    if subcat[j]['status']:
+                    if subcat[j] in group_categories:
                         text = OK + ' ' + text
                     else:
                         text = NOK + ' ' + text
@@ -226,16 +275,18 @@ async def get_keyboard(chat_id, index):
                 j += 1
 
                 if j < len(subcat):
-                    text = subcat[j]['name']
+                    text = subcat[j]
                     if index % 100 == i:
-                        if subcat[j]['status']:
+                        if subcat[j] in group_categories:
                             text = NOK + ' ' + text
                             status = 0
+                            group_categories.erase(subcat[j])
                         else:
                             text = OK + ' ' + text
                             status = 1
+                            group_categories.append(subcat[j])
                     else:
-                        if subcat[j]['status']:
+                        if subcat[j] in group_categories:
                             text = OK + ' ' + text
                         else:
                             text = NOK + ' ' + text
@@ -250,19 +301,18 @@ async def get_keyboard(chat_id, index):
                     keyboard.row(but0, but1)
                 else:
                     keyboard.add(but0)
-            group_categories[index // 100 - 1]['subcategories'][index % 100 - 1]['status'] = status
             db.groups.update_one({'chat_id': str(chat_id)},
-                                {"$set": {'category': group_categories,
+                                {"$set": {'subcategories': group_categories,
                                           'category_id': index // 100 - 1}})
 
     but = types.InlineKeyboardButton(
-        text='Назад',
+        text=await get_text(msg, 'buttons', 'back'),
         callback_data='Назад'
     )
     keyboard.add(but)
 
     but = types.InlineKeyboardButton(
-        text='Завершить',
+        text=await get_text(msg, 'buttons', 'complete'),
         callback_data='Завершить'
     )
     keyboard.add(but)
@@ -274,6 +324,7 @@ async def get_keyboard(chat_id, index):
 async def inline(c):
     print('inline')
     chat_id = c.message.chat.id
+    msg = c.message
 
     d = c.data
     #print(c)
@@ -281,48 +332,66 @@ async def inline(c):
         if chat_id < 0:
             state = dp.current_state(user=c.message.chat.id)
             await state.set_state(TestStates.all()[2])
+            with suppress(MessageNotModified):
+                await bot.edit_message_reply_markup(
+                    chat_id=chat_id,
+                    message_id=c.message.message_id
+                )
+            group = db.groups.find_one({'chat_id': str(chat_id)})
+
+            answer = text(
+                bold(await get_text(msg, 'show_room', 'category')),
+                list(categories_module.categories[group['category_id']].keys())[0],
+                bold(await get_text(msg, 'show_room', 'tags')),
+                ' '.join(group['subcategories']) + '\n',
+                await get_msg(c.message, 'datetime'), sep='\n'
+            )
             await bot.send_message(
                 chat_id,
-                messages.datetime
+                answer,
+                parse_mode=types.ParseMode.MARKDOWN
             )
+            await change_state(c.message, 3)
         else:
             pass
     elif d == 'Назад':
         db.groups.update_one({'chat_id': str(chat_id)},
-                            {"$set": {'category': await base_categories(),
+                            {"$set": {'subcategories': [],
                                       'category_id': -1}})
 
         await bot.edit_message_reply_markup(
             chat_id=chat_id,
             message_id=c.message.message_id,
-            reply_markup=await base_categories_keyboard()
+            reply_markup=await base_categories_keyboard(c.message)
         )
     else:
         await bot.edit_message_reply_markup(
             chat_id=chat_id,
             message_id=c.message.message_id,
-            reply_markup=await get_keyboard(chat_id, int(d))
+            reply_markup=await get_keyboard(c.message, int(d))
         )
 
 
 @dp.message_handler(state='*', commands=['start'])
 async def start(msg):
     print('start')
-    print(msg)
     chat_id = msg.chat.id
     if chat_id > 0:
-        button = types.InlineKeyboardButton('Перейти в Хаб', url='https://nethub.club/#/')
+        button = types.InlineKeyboardButton(
+            await get_text(msg, 'buttons', 'to_hub'),
+            url='https://nethub.club/#/'
+        )
         keyboard = types.InlineKeyboardMarkup().add(button)
 
         await bot.send_message(
             chat_id,
-            messages.start_in_chat,
+            await get_msg(msg, 'start_in_chat'),
             reply_markup=keyboard
         )
     else:
         await bot.send_message(
             chat_id,
-            messages.start_in_group
+            await get_msg(msg, 'start_in_group')
         )
 
 
@@ -331,7 +400,7 @@ async def help(msg):
     print('help')
     await bot.send_message(
         msg.chat.id,
-        messages.help_in_group
+        await get_msg(msg, 'help_in_group')
     )
 
 
@@ -379,7 +448,8 @@ async def title(msg):
             'date': 0,
             'admins': await get_admins(msg.chat.id),
             'participants': await get_participants(msg.chat.id),
-            'category': await base_categories(),#await base_categories(),
+            'subcategories': [],
+            #await base_categories(),#await base_categories(),
             'category_id': -1,
             'logo': res['data']['url'],
             'language_code': msg['from']['language_code']
@@ -470,17 +540,35 @@ async def show_room(msg):
     voice = db.groups.find_one({'chat_id': str(msg.chat.id)})
 
     if voice == None:
-        answer = messages.room_is_none
-    else:
-        answer = (
-            'Название:\n' + voice['title'] + '\n' +
-            'Ссылка:\n' + voice['inviteLink']
+        answer = text(await get_msg(msg, 'room_is_none'))
+        await bot.send_message(
+            msg.chat.id,
+            answer
         )
+    else:
+        answer = text(
+            bold(await get_text(msg, 'show_room', 'title')), voice['title'],
+            bold(await get_text(msg, 'show_room', 'category')),
+            list(categories_module.categories[voice['category_id']].keys())[0],
+            bold(await get_text(msg, 'show_room', 'tags')),
+            ' '.join(voice['subcategories']),
+            bold(await get_text(msg, 'show_room', 'date_time')),
+            datetime.fromtimestamp(voice['date']),
+            bold(await get_text(msg, 'show_room', 'link')),
+            voice['inviteLink'][8:], sep='\n'
+        )
+        button = types.InlineKeyboardButton(
+            await get_text(msg, 'buttons', 'to_hub'),
+            url='https://nethub.club/#/?m=room&room=' + str(msg.chat.id)
+        )
+        keyboard = types.InlineKeyboardMarkup().add(button)
 
-    await bot.send_message(
-        msg.chat.id,
-        answer
-    )
+        await bot.send_message(
+            msg.chat.id,
+            answer,
+            parse_mode=types.ParseMode.MARKDOWN,
+            reply_markup=keyboard
+        )
 
 
 @dp.message_handler(state='*', commands=['delete_room'])
@@ -489,28 +577,21 @@ async def delete_room(msg):
     db.groups.delete_one({'chat_id': str(msg.chat.id)})
     await bot.send_message(
         msg.chat.id,
-        'Комната удалена'
+        await get_msg(msg, 'room_is_delete')
     )
-
-
-async def change_state(msg, num):
-    print('change_state')
-    print(msg.from_user.id)
-    state = dp.current_state(user=msg.from_user.id)
-    await state.set_state(TestStates.all()[num])
 
 
 @dp.message_handler(state='*', commands=['new_room'])
 async def state_0(msg):
     print('new_room')
-    if await check_chat(msg) or await check_member(msg):
+    if await check_chat(msg) or await check_member(msg) or await check_bot_privilege(msg):
         return
 
     db.groups.delete_one({'chat_id': str(msg.chat.id)})
 
     await bot.send_message(
         msg.chat.id,
-        messages.new_room,
+        await get_msg(msg, 'new_room'),
     )
     await change_state(msg, 1)
 
@@ -524,27 +605,34 @@ async def state_1(msg):
     await title(msg)
     await bot.send_message(
         msg.chat.id,
-        messages.title,
-        reply_markup=await base_categories_keyboard()
+        await get_msg(msg, 'title'),
+        reply_markup=await base_categories_keyboard(msg)
     )
     await change_state(msg, 2)
 
 
-@dp.message_handler(state=TestStates.TEST_STATE_2)
+@dp.message_handler(state=TestStates.TEST_STATE_3)
 async def state_2(msg):
     print('state_2')
     if await check_chat(msg) or await check_member(msg):
         return
 
     datetime_object = datetime.strptime(msg.text, '%d %m %Y %H:%M')
-    timestamp = datetime.timestamp(datetime_object) + 10800
+    timestamp = int(datetime.timestamp(datetime_object))
 
     db.groups.update_one({'chat_id': str(msg.chat.id)},
                         {"$set": {'date': timestamp}})
 
+    button = types.InlineKeyboardButton(
+        await get_text(msg, 'buttons', 'to_hub'),
+        url='https://nethub.club/#/?m=room&room=' + str(msg.chat.id)
+    )
+    keyboard = types.InlineKeyboardMarkup().add(button)
+
     await bot.send_message(
         msg.chat.id,
-        messages.complete
+        await get_msg(msg, 'complete'),
+        reply_markup=keyboard
     )
     await change_state(msg, 0)
 
