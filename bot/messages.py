@@ -1,23 +1,42 @@
 messages = {
 'ru': {
-'check_chat': (
-'Добавьте бота в чат, чтобы использовать его.'
-),
-
 'check_bot_privilege': (
-'Сначала сделайте бота администратором и дайте ему права на добавление пользователей по ссылке.'
+'Сначала сделайте бота администратором, дайте ему права на добавление '
+'пользователей по ссылке и закрепление сообщений.'
 ),
 
 'start_in_chat': (
-'Привет!\nЧтобы посмотреть доступные и запланированные комнаты, '
-'нажмите на кнопку под этим сообщением и перейдите по ссылке.\n'
-'Чтобы создать свою комнату, добавьте бота в беседу '
-'и наберите команду /start'
+'Привет!\nДля использования бота нужно пройти короткую регистрацию в один шаг: '
+'выберите интересную вам категорию, а затем отметьте теги; категории и теги можно '
+'выбирать неоднократно, используя кнопку Назад.'
 ),
 
-'start_in_group': (
-'Отлично!\nВы добавили меня в группу.\nДля создания комнаты '
-'наберите команду /new_room\n'
+'start_in_chat_with_reg': (
+'Что Вы хотите сделать?'
+),
+
+'greeting': (
+'Чтобы посмотреть доступные и запланированные комнаты, '
+'нажмите на кнопку под этим сообщением и перейдите по ссылке.'
+),
+
+'make_room': (
+'Чтобы создать комнату в группе:\n'
+'1. Добавьте меня в группу, в которой будет запущен голосовой чат.\n'
+'2. Сделайте бота администратором группы. Проверьте, чтобы у бота были права '
+'на приглашение пользователей по ссылке и закрепление сообщений.\n'
+'3. Отправьте в группу команду /new_room. Бот реагирует только на команды от '
+'администраторов.\n'
+'4. Перейдите в этот чат и слудуйте указаниям бота.'
+),
+
+'settings': (
+'Выберите интересную вам категорию, а затем отметьте теги; категории и теги можно '
+'выбирать неоднократно, используя кнопку Назад.'
+),
+
+'coming_soon': (
+'Эта функция появится очень скоро!'
 ),
 
 'title': (
@@ -42,15 +61,25 @@ messages = {
 'Комната удалена.'
 ),
 
-'datetime': (
-'Теперь отправьте мне дату и время в следующем формате:\n'
-'ДД ММ ГГГГ ЧЧ:ММ'
+'category_selected': (
+'Категории и теги выбраны.'
+),
+
+'date': (
+'В какой день планируется комната?'
+),
+
+'time': (
+'Укажите время начала в следующем формате:\n'
+'ЧЧ:ММ'
+),
+
+'time_is_correct': (
+'Формат времени неверный, попробуйте еще раз.'
 ),
 
 'complete': (
-'Комната создана!\nВ назначенное время запустите голосовой чат. '
-'Комната автоматически попадет в общий хаб!\n'
-'Если нужна помощь, то воспользуйтесь командой /help'
+'Комната создана!\nВ назначенное время запустите голосовой чат.'
 ),
 
 'help_in_group': (
@@ -61,24 +90,43 @@ messages = {
 )
 },
 'en': {
-'check_chat': (
-'Add a bot to chat to use it.'
-),
-
 'check_bot_privilege': (
-'First, make the bot an administrator and give it the rights to add users via the link.'
+'First, make the bot an administrator, give it permission to add '
+'link users and post messages.'
 ),
 
 'start_in_chat': (
-'Hi!\nTo see available and scheduled rooms, '
-'click on the button below and follow the link.\n'
-'To create own room, add a bot to the conversation '
-'and type the command /start'
+'Hello!\nTo use the bot, you need to go through a short registration in one step: '
+'select the category you are interested in and then check the tags; categories and tags can be '
+'select repeatedly using the Back button.'
 ),
 
-'start_in_group': (
-'Great!\nYou added me to the group.\nTo create a room, '
-'type the command /new_room\n'
+'start_in_chat_with_reg': (
+'What do you want to do?'
+),
+
+'greeting': (
+'To see available and scheduled rooms, '
+'click on the button below this message and follow the link.'
+),
+
+'make_room': (
+'To create a room in a group:\n'
+'1. Add me to the group where the voice chat will start.\n'
+'2. Make the bot a group admin. Check that the bot has rights '
+'to invite users by link and pin messages.\n'
+'3. Send the /new_room command to the group. The bot only responds to commands from '
+'administrators.\n'
+'4. Go to this chat and follow the bot\'s instructions.'
+),
+
+'settings': (
+'Select the category you are interested in and then check the tags; categories and tags can be '
+'select repeatedly using the Back button.'
+),
+
+'coming_soon': (
+'This feature is coming very soon!'
 ),
 
 'title': (
@@ -103,15 +151,21 @@ messages = {
 'Room deleted.'
 ),
 
-'datetime': (
-'Send me the date and time in the following format:\n'
-'DD MM YYYY HH:MM'
+'category_selected': (
+'Categories and tags are selected.'
+),
+
+'date': (
+'What day is the room planned for?'
+),
+
+'time': (
+'Please enter start time in the following format:\n'
+'HH:MM'
 ),
 
 'complete': (
-'Room is created!\nStart a voice chat at the appointed time. '
-'The room will automatically go to the general hub!\n'
-'If you need help, use the command /help'
+'The room has been created!\nAt the appointed time, start the voice chat.'
 ),
 
 'help_in_group': (
