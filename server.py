@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
 from pymongo import MongoClient
 import sys
+import asyncio
 # insert at 1, 0 is the script path (or '' in REPL)
 sys.path.insert(1, 'bot')
 
@@ -10,7 +11,7 @@ import config
 
 app = Flask(__name__)
 CORS(app, resources={r'/*': {'origins': '*'}})
-
+'''
 mongo_pass = config.mongo_pass
 mongo_db = config.mongo_db
 link = ('mongodb+srv://{}:{}@cluster0-e2dix.mongodb.net/{}?retryWrites=true&'
@@ -19,13 +20,17 @@ link = link.format("Leonid", mongo_pass, mongo_db)
 
 client = MongoClient(link, connect=False)
 db = client[config.mongo_db_name]
+'''
+client = MongoClient('localhost', 27017)
+db = client[config.mongo_db_name]
+
 
 def correct_view(obj):
     res = {}
     res['id'] = obj['chat_id']
     res['title'] = obj['title']
     res['admins'] = obj['admins']
-    res['participants'] = obj['participants']
+    res['members'] = obj['members']
     res['inviteLink'] = obj['inviteLink']
     res['logo'] = obj['logo']
 
@@ -45,28 +50,8 @@ def correct_view(obj):
 @app.route('/home', methods=['GET'])
 def get_home():
     try:
-        n = 13
-        # https://romanychev.online/nethub/home
-        #groups_data = db.groups.find({}, {'_id': False})
-        groups_data = db.groups.find({}).sort('participants.1', -1)
-        groups = []
-        for group in groups_data:
-            groups.append(correct_view(group))
-
-        categories = [[] for i in range(n)]
-
-        for i in range(n):
-            groups_data = db.groups.find(
-                {'category_id': i}
-            ).sort('participants.1', -1)
-            j = 0
-            for obj in groups_data:
-                categories[i].append(correct_view(obj))
-                j += 1
-                if j == 3:
-                    break
-
-        return jsonify({'top': groups, 'categories': categories})
+        res = db.temporary.find_one({'name': 'home'}, {'_id': 0, 'name': 0})
+        return jsonify(res)
     except:
         return jsonify({'server': 'error'}), 400
 
@@ -79,7 +64,7 @@ def get_category():
         category_amount = int(request.args.get('amount'))
         groups_data = db.groups.find(
             {'category_id': category_id}
-        ).limit(category_amount)
+        ).sort('members', -1).limit(category_amount)
 
         category = []
         for obj in groups_data:
@@ -119,10 +104,55 @@ def search():
         return jsonify({'server': 'error'}), 400
 
 
+async def main():
+    try:
+        app.run(
+            host='127.0.0.1',
+            port=config.server_port,
+            debug=True,
+            threaded=True,
+        )
+    except:
+        print('Error main')
+
+
+async def update_home():
+    while True:
+        try:
+            n = 13
+            groups_data = db.groups.find({}, {'_id' : 0}).sort('members', -1).limit(10)
+            groups = list(map(correct_view, groups_data))
+            categories = [[] for i in range(n)]
+
+            for i in range(n):
+                groups_data = list(db.groups.find(
+                    {'category_id': i}, {'_id' : 0}
+                ).sort('members', -1).limit(3))
+                categories[i].extend(list(map(correct_view, groups_data)))
+
+            obj = db.temporary.find_one({'name': 'home'})
+            post = {'name': 'home', 'top': groups,
+                    'categories': categories}
+            if obj == None:
+                db.temporary.insert_one(post)
+            else:
+                db.temporary.update_one({'name': 'home'}, post)
+        except:
+            print('Error update_home')
+
+        await asyncio.sleep(5)
+
+
 if __name__ == '__main__':
-    app.run(
-        host='127.0.0.1',
-        port=config.server_port,
-        debug=True,
-        threaded=True,
-    )
+    try:
+        loop = asyncio.get_event_loop()
+        tasks = [
+            loop.create_task(main()),
+            loop.create_task(update_home())
+        ]
+        wait_tasks = asyncio.wait(tasks)
+        loop.run_until_complete(wait_tasks)
+        loop.close()
+
+    except Exception as e:
+        print(e)
