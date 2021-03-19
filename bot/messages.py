@@ -6,8 +6,8 @@ messages = {
 ),
 
 'start_in_chat': (
-'Привет!\nДля использования бота нужно пройти короткую регистрацию в один шаг: '
-'выберите интересную вам категорию, а затем отметьте теги; категории и теги можно '
+'Привет!\nДля использования бота нужно пройти короткую регистрацию в один шаг. '
+'Выберите интересную вам категорию, а затем отметьте теги. Категории и теги можно '
 'выбирать неоднократно, используя кнопку Назад.'
 ),
 
@@ -26,9 +26,8 @@ messages = {
 '2. Сделайте бота администратором группы. Проверьте, чтобы у бота были права '
 'на приглашение пользователей по ссылке и закрепление сообщений.\n'
 '3. Отправьте в группу команду /new_room. Бот реагирует только на команды от '
-'администраторов.\n'
-'4. Перейдите в этот чат и слудуйте указаниям бота.'
-),
+'администраторов.\n''4. Перейдите в этот чат и слудуйте указаниям бота.'
+'4. Перейдите в этот чат и следуйте указаниям бота.'),
 
 'settings': (
 'Выберите интересную вам категорию, а затем отметьте теги; категории и теги можно '
@@ -96,8 +95,8 @@ messages = {
 ),
 
 'start_in_chat': (
-'Hello!\nTo use the bot, you need to go through a short registration in one step: '
-'select the category you are interested in and then check the tags; categories and tags can be '
+'Hello!\nTo use the bot, you need to go through a short registration in one step. '
+'Select the category you are interested in and then check the tags. Categories and tags can be '
 'select repeatedly using the Back button.'
 ),
 
@@ -162,6 +161,10 @@ messages = {
 'time': (
 'Please enter start time in the following format:\n'
 'HH:MM'
+),
+
+'time_is_correct': (
+'The time format is incorrect, please try again.'
 ),
 
 'complete': (

@@ -720,9 +720,10 @@ async def send_room(msg):
         bold(await get_text(msg, 'show_room', 'category')),
         list(categories_module.categories[group['category_id']].keys())[0],
         bold(await get_text(msg, 'show_room', 'tags')),
-        ' '.join(group['subcategories']),
+        ' | '.join(group['subcategories']),
         bold(await get_text(msg, 'show_room', 'date_time')),
-        datetime.datetime.fromtimestamp(group['date']),
+        datetime.datetime.fromtimestamp(group['date'] + 3 * 60 * 60).strftime(
+            "%d %B %I:%M"),
         bold(await get_text(msg, 'show_room', 'link')),
         group['inviteLink'][8:], sep='\n'
     )

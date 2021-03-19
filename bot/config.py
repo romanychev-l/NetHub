@@ -1,5 +1,5 @@
-import test as f
-#import prod as f
+#import test as f
+import prod as f
 
 token = f.token
 
