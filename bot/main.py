@@ -51,7 +51,6 @@ db = client[config.mongo_db_name]
 
 bot = Bot(token=config.token)
 dp = Dispatcher(bot, storage=MemoryStorage())
-#dp.middleware.setup(LoggingMiddleware())
 
 
 async def on_startup(dp):
@@ -81,17 +80,16 @@ OK = '✅'
 NOK = '❌'
 
 
-languages = {}
-active_group = {}
-
-
 async def get_msg(msg, text):
-    global languages
-    if msg.chat.id in languages:
-        code = languages[msg.chat.id]
-    else:
-        code = msg['from']['language_code']
-        languages[msg.chat.id] = code
+    chat_id = str(msg.chat.id)
+    if int(chat_id) < 0:
+        chat_id = str(msg['from']['id'])
+
+    user = db.users.find_one({'chat_id': chat_id})
+
+    code = 'en'
+    if user != None:
+        code = user['language_code']
 
     if code == 'ru':
         return messages.messages['ru'][text]
@@ -101,16 +99,43 @@ async def get_msg(msg, text):
 
 async def get_text(msg, o, t):
     # o - first var, t - second var
-    global languages
-    if msg.chat.id in languages:
-        code = languages[msg.chat.id]
-    else:
-        code = msg['from']['language_code']
-        languages[msg.chat.id] = code
+    chat_id = str(msg.chat.id)
+    if int(chat_id) < 0:
+        chat_id = str(msg['from']['id'])
+
+    user = db.users.find_one({'chat_id': chat_id})
+
+    code = 'en'
+    if user != None:
+        code = user['language_code']
+
     if code == 'ru':
         return texts.text[o]['ru'][t]
     else:
         return texts.text[o]['en'][t]
+
+
+async def get_cat(msg):
+    print('get_cat')
+    chat_id = str(msg.chat.id)
+    if int(chat_id) < 0:
+        chat_id = str(msg['from']['id'])
+
+    user = db.users.find_one({'chat_id': chat_id})
+
+    code = 'en'
+    if user != None:
+        code = user['language_code']
+
+    if code == 'ru':
+        return categories_module.categories_ru
+    else:
+        return categories_module.categories
+
+
+async def get_chat_id(user_id):
+    chat_id = str(db.active_group.find_one({'user_id': user_id})['chat_id'])
+    return chat_id
 
 
 async def onetime_keyboard(msg):
@@ -143,7 +168,8 @@ async def base_categories_keyboard(msg):
     keyboard = types.InlineKeyboardMarkup()
     index = 100
     i = 0
-    categories = categories_module.categories
+    #categories = categories_module.categories
+    categories = await get_cat(msg)
     while i < len(categories):
         word = list(categories[i].keys())[0]
         but0 = types.InlineKeyboardButton(text=word, callback_data=str(index))
@@ -190,7 +216,7 @@ async def check_chat(msg):
 
 
 async def check_member(msg):
-    admins = await bot.get_chat_administrators(msg.chat.id)
+    admins = await bot.get_chat_administrators(msg.forward_from_chat.id)
     for admin in admins:
         if admin['user']['id'] == msg['from']['id']:
             return False
@@ -227,6 +253,24 @@ async def check_bot_privilege(msg):
     return True
 
 
+async def check_bot_privilege_channel(msg):
+    admins = await bot.get_chat_administrators(msg.forward_from_chat.id)
+    for admin in admins:
+        if admin['user']['id'] == bot.id:
+            if (admin['status'] == 'administrator' and
+                admin['can_invite_users'] == True and
+                admin['can_post_messages'] == True):
+                return False
+            break
+
+    await bot.send_message(
+        msg['from']['id'],
+        await get_msg(msg, 'check_bot_privilege_channel')
+    )
+
+    return True
+
+
 async def get_members(chat_id):
     members = await bot.get_chat_members_count(chat_id)
     if members == None:
@@ -235,14 +279,14 @@ async def get_members(chat_id):
 
 
 async def get_keyboard(msg, index):
-    from_id = str(msg.chat.id)
-    chat_id = int(active_group[from_id])
+    user_id = str(msg.chat.id)
+    chat_id = await get_chat_id(user_id)
     keyboard = types.InlineKeyboardMarkup()
-    if chat_id < 0:
-        group = db.groups.find_one({'chat_id' : str(chat_id)})
+    if int(chat_id) < 0:
+        group = db.groups.find_one({'chat_id' : chat_id})
         group_categories = group['subcategories']
-        subcat = list(
-            categories_module.categories[index // 100 - 1].values())[0]
+        categories = await get_cat(msg)
+        subcat = list(categories[index // 100 - 1].values())[0]
         if index % 100 == 0:
             i = 1
             j = 0
@@ -320,7 +364,7 @@ async def get_keyboard(msg, index):
                     keyboard.row(but0, but1)
                 else:
                     keyboard.add(but0)
-            db.groups.update_one({'chat_id': str(chat_id)},
+            db.groups.update_one({'chat_id': chat_id},
                                 {"$set": {'subcategories': group_categories,
                                           'category_id': index // 100 - 1}})
 
@@ -340,17 +384,14 @@ async def get_keyboard(msg, index):
 
 
 async def get_keyboard_reg(msg, index):
-    from_id = str(msg.chat.id)
-    #chat_id = int(active_group[from_id])
+    user_id = str(msg.chat.id)
     keyboard = types.InlineKeyboardMarkup()
-    if int(from_id) > 0:
-        print(from_id)
-        group = db.users.find_one({'chat_id' : from_id})
+    if int(user_id) > 0:
+        group = db.users.find_one({'chat_id' : user_id})
         group_categories = group['subcategories']
         index_cat = index // 100 - 1
-        subcat = list(categories_module.categories[index_cat].values())[0]
-        print(group_categories)
-        print(subcat)
+        categories = await get_cat(msg)
+        subcat = list(categories[index_cat].values())[0]
 
         if index % 100 == 0:
             i = 1
@@ -441,7 +482,7 @@ async def get_keyboard_reg(msg, index):
                     keyboard.row(but0, but1)
                 else:
                     keyboard.add(but0)
-            db.users.update_one({'chat_id': from_id},
+            db.users.update_one({'chat_id': user_id},
                                 {"$set": {'subcategories': group_categories}})
 
     but = types.InlineKeyboardButton(
@@ -464,9 +505,8 @@ async def get_keyboard_reg(msg, index):
     c.data == 'three_day', state=TestStates.TEST_STATE_3)
 async def date_inline(c):
     print('date_inline')
-    global active_group
-    from_id = str(c.message.chat.id)
-    chat_id = int(active_group[from_id])
+    user_id = str(c.message.chat.id)
+    chat_id = await get_chat_id(user_id)
 
     msg = c.message
 
@@ -479,43 +519,47 @@ async def date_inline(c):
 
     timestamp = int(datetime.datetime.timestamp(dt)) - 3 * 60 * 60
 
-    db.groups.update_one({'chat_id': str(chat_id)},
+    db.groups.update_one({'chat_id': chat_id},
                         {"$set": {'date': timestamp}})
 
     with suppress(MessageNotModified):
         await bot.edit_message_reply_markup(
-            from_id,
+            user_id,
             message_id=c.message.message_id
         )
 
-    await bot.send_message(from_id, await get_msg(msg, 'time'))
+    await bot.send_message(user_id, await get_msg(msg, 'time'))
     await change_state(c, 4)
 
 
 @dp.callback_query_handler(lambda c:True, state=TestStates.TEST_STATE_2)
 async def inline(c):
     print('inline')
-    global active_group
-    from_id = str(c.message.chat.id)
-    chat_id = int(active_group[from_id])
+    user_id = str(c.message.chat.id)
+    chat_id = await get_chat_id(user_id)
     msg = c.message
 
     d = c.data
     if d == 'Завершить':
         with suppress(MessageNotModified):
             await bot.edit_message_reply_markup(
-                from_id,
+                user_id,
                 message_id=c.message.message_id
             )
-        group = db.groups.find_one({'chat_id': str(chat_id)})
+        group = db.groups.find_one({'chat_id': chat_id})
+        list_categories = ''
+        if group['category_id'] != -1:
+            categories = await get_cat(msg)
+            list_categories = list(
+                categories[group['category_id']].keys())[0]
 
         answer = text(
             bold(await get_text(msg, 'show_room', 'category')),
-            list(categories_module.categories[group['category_id']].keys())[0],
+            list_categories,
             bold(await get_text(msg, 'show_room', 'tags')),
             ' '.join(group['subcategories']) + '\n',
             await get_msg(c.message, 'date'), sep='\n'
-        )
+        ).replace('_', '\\n')
         dt = datetime.datetime.now()
         but0 = types.InlineKeyboardButton(
             dt.strftime('%d %B'), callback_data='one_day'
@@ -532,25 +576,25 @@ async def inline(c):
 
 
         await bot.send_message(
-            from_id,
+            user_id,
             answer,
             parse_mode=types.ParseMode.MARKDOWN,
             reply_markup=keyboard
         )
         await change_state(c, 3)
     elif d == 'Назад':
-        db.groups.update_one({'chat_id': str(chat_id)},
+        db.groups.update_one({'chat_id': chat_id},
                             {"$set": {'subcategories': [],
                                       'category_id': -1}})
 
         await bot.edit_message_reply_markup(
-            from_id,
+            user_id,
             message_id=c.message.message_id,
             reply_markup=await base_categories_keyboard(c.message)
         )
     else:
         await bot.edit_message_reply_markup(
-            from_id,
+            user_id,
             message_id=c.message.message_id,
             reply_markup=await get_keyboard(c.message, int(d))
         )
@@ -559,33 +603,32 @@ async def inline(c):
 @dp.callback_query_handler(lambda c:True, state=TestStates.TEST_STATE_5)
 async def register(c):
     print('inline')
-    global active_group
-    from_id = str(c.message.chat.id)
+    user_id = str(c.message.chat.id)
     msg = c.message
 
     d = c.data
     if d == 'Завершить':
         with suppress(MessageNotModified):
             await bot.edit_message_reply_markup(
-                from_id,
+                user_id,
                 message_id=c.message.message_id
             )
 
         await bot.send_message(
-            from_id,
+            user_id,
             await get_msg(msg, 'category_selected'),
             reply_markup=await everytime_keyboard(msg)
         )
         await change_state(c, 0)
     elif d == 'Назад':
         await bot.edit_message_reply_markup(
-            from_id,
+            user_id,
             message_id=c.message.message_id,
             reply_markup=await base_categories_keyboard(c.message)
         )
     else:
         await bot.edit_message_reply_markup(
-            from_id,
+            user_id,
             message_id=c.message.message_id,
             reply_markup=await get_keyboard_reg(c.message, int(d))
         )
@@ -597,25 +640,26 @@ async def start(msg):
     if await check_chat(msg):
         return
 
-    chat_id = msg.chat.id
-    if chat_id > 0:
-        user = db.users.find_one({'chat_id': str(msg['from']['id'])})
+    user_id = str(msg.chat.id)
+    if int(user_id) > 0:
+        user = db.users.find_one({'chat_id': user_id})
         if user == None:
             db.users.insert_one({
-                'chat_id': str(msg['from']['id']),
+                'chat_id': user_id,
                 'groups_ids': [],
-                'subcategories': [[] for i in range(13)]
+                'subcategories': [[] for i in range(13)],
+                'language_code': msg['from']['language_code']
             })
 
             await bot.send_message(
-                chat_id,
+                user_id,
                 await get_msg(msg, 'start_in_chat'),
                 reply_markup=await base_categories_keyboard(msg)
             )
             await change_state(msg, 5)
         else:
             await bot.send_message(
-                chat_id,
+                user_id,
                 await get_msg(msg, 'start_in_chat_with_reg'),
                 reply_markup=await everytime_keyboard(msg)
             )
@@ -642,13 +686,13 @@ async def delete_command(text):
     return text
 
 
-async def title(msg):
+async def title(msg, chat_id):
     text = await delete_command(msg.text)
-    voice = db.groups.find_one({'chat_id': str(msg.chat.id)})
+    voice = db.groups.find_one({'chat_id': chat_id})
 
     answer = ''
     if voice == None:
-        chat = await bot.get_chat(msg.chat.id)
+        chat = await bot.get_chat(chat_id)
 
         res = ''
         try:
@@ -671,16 +715,19 @@ async def title(msg):
                 res = res['data']['url']
         except:
             res = ''
+        try:
+            await bot.export_chat_invite_link(chat_id)
+        except Exception as e:
+            print(e)
 
-        await bot.export_chat_invite_link(msg.chat.id)
-        chat = await bot.get_chat(msg.chat.id)
+        chat = await bot.get_chat(chat_id)
         voice = {
-            'chat_id': str(msg.chat.id),
+            'chat_id': chat_id,
             'status': 'offline',
             'inviteLink': chat.invite_link,
             'date': 0,
-            'admins': await get_admins(msg.chat.id),
-            'members': await get_members(msg.chat.id),
+            'admins': await get_admins(chat_id),
+            'members': await get_members(chat_id),
             'subcategories': [],
             'category_id': -1,
             'logo': res,
@@ -689,7 +736,7 @@ async def title(msg):
         db.groups.insert_one(voice)
     else:
         db.groups.update_one(
-            {'chat_id': str(msg.chat.id)},
+            {'chat_id': chat_id},
             {"$set": {'title': text}}
         )
 
@@ -711,15 +758,20 @@ async def change_title(msg):
 async def send_room(msg):
     print('send_room')
 
-    global active_group
-    chat_id = active_group[str(msg.chat.id)]
-
+    chat_id = await get_chat_id(str(msg.chat.id))
     group = db.groups.find_one({'chat_id': chat_id})
 
+    list_categories = ''
+    if group['category_id'] != -1:
+        categories = await get_cat(msg)
+        list_categories = list(
+            categories[group['category_id']].keys())[0]
+
     answer = text(
-        bold(await get_text(msg, 'show_room', 'title')), group['title'],
+        bold(await get_text(msg, 'show_room', 'title')),
+        group['title'],
         bold(await get_text(msg, 'show_room', 'category')),
-        list(categories_module.categories[group['category_id']].keys())[0],
+        list_categories,
         bold(await get_text(msg, 'show_room', 'tags')),
         ' | '.join(group['subcategories']),
         bold(await get_text(msg, 'show_room', 'date_time')),
@@ -727,13 +779,12 @@ async def send_room(msg):
             "%d %B %I:%M"),
         bold(await get_text(msg, 'show_room', 'link')),
         group['inviteLink'][8:], sep='\n'
-    )
+    ).replace('_', '\\n')
     button = types.InlineKeyboardButton(
         await get_text(msg, 'buttons', 'to_hub'),
         url='https://nethub.club/#/?m=room&room=' + str(msg.chat.id)
     )
     keyboard = types.InlineKeyboardMarkup().add(button)
-
     res = await bot.send_message(
         chat_id,
         answer,
@@ -751,10 +802,10 @@ async def delete_room(msg):
     print('delete_room')
     if await check_chat(msg):
         return
-
-    db.groups.delete_one({'chat_id': str(msg.chat.id)})
+    chat_id = str(msg.chat.id)
+    db.groups.delete_one({'chat_id': chat_id})
     await bot.send_message(
-        msg.chat.id,
+        chat_id,
         await get_msg(msg, 'room_is_delete')
     )
 
@@ -765,20 +816,21 @@ async def state_0(msg):
     if (not await check_chat(msg) or await check_member(msg) or
             await check_bot_privilege(msg)): return
 
-    db.groups.delete_one({'chat_id': str(msg.chat.id)})
 
-    from_id = str(msg['from']['id'])
+    chat_id = str(msg.chat.id)
+    user_id = str(msg['from']['id'])
+    db.groups.delete_one({'chat_id': chat_id})
 
-    user = db.users.find_one({'chat_id': from_id})
+    user = db.users.find_one({'chat_id': user_id})
     groups_ids = user['groups_ids']
-    groups_ids.append(str(msg.chat.id))
+    groups_ids.append(chat_id)
     groups_ids = list(set(groups_ids))
-    db.users.update_one({'chat_id': from_id},
+    db.users.update_one({'chat_id': user_id},
                         {'$set': {'groups_ids': groups_ids}})
-    global active_group
-    active_group[from_id] = str(msg.chat.id)
+    db.active_group.delete_one({'user_id': user_id})
+    db.active_group.insert_one({'user_id': user_id, 'chat_id': chat_id})
 
-    await title(msg)
+    await title(msg, chat_id)
 
     if user == None:
         return
@@ -797,15 +849,14 @@ async def state_1(msg):
     if await check_chat(msg):
         return
 
-    global active_group
-    from_id = str(msg['from']['id'])
-    chat_id = int(active_group[from_id])
+    user_id = str(msg['from']['id'])
+    chat_id = await get_chat_id(user_id)
 
-    db.groups.update_one({'chat_id': str(chat_id)},
+    db.groups.update_one({'chat_id': chat_id},
                         {'$set': {'title': msg.text}})
 
     await bot.send_message(
-        from_id,
+        user_id,
         await get_msg(msg, 'title'),
         reply_markup=await base_categories_keyboard(msg)
     )
@@ -832,35 +883,67 @@ async def state_2(msg):
     if await check_chat(msg):
         return
 
-    global active_group
-    from_id = str(msg['from']['id'])
-    chat_id = int(active_group[from_id])
+    user_id = str(msg['from']['id'])
+    chat_id = await get_chat_id(user_id)
 
-    group = db.groups.find_one({'chat_id': str(chat_id)})
+    group = db.groups.find_one({'chat_id': chat_id})
     timestamp = group['date']
 
     user_time = await correct_time(msg.text)
     if user_time == False:
         await bot.send_message(
-            from_id,
+            user_id,
             await get_msg(msg, 'time_is_correct')
         )
         return
     timestamp += user_time
 
-    db.groups.update_one({'chat_id': str(chat_id)},
+    db.groups.update_one({'chat_id': chat_id},
                         {"$set": {'date': timestamp}})
 
     await send_room(msg)
-    with suppress(KeyError):
-        del active_group[from_id]
+    db.active_group.delete_one({'user_id': user_id})
 
     await bot.send_message(
-        from_id,
+        user_id,
         await get_msg(msg, 'complete'),
         reply_markup=await everytime_keyboard(msg)
     )
     await change_state(msg, 0)
+
+
+@dp.message_handler(lambda message: message.forward_from_chat,
+    content_types=types.ContentTypes.ANY)
+async def forward_from_chat(msg):
+    print('forward_from_chat')
+    if (await check_chat(msg) or await check_member(msg) or
+        await check_bot_privilege_channel(msg)): return
+
+
+    chat_id = str(msg.forward_from_chat.id)
+    user_id = str(msg['from']['id'])
+    db.groups.delete_one({'chat_id': chat_id})
+
+    user = db.users.find_one({'chat_id': user_id})
+    groups_ids = user['groups_ids']
+    groups_ids.append(chat_id)
+    groups_ids = list(set(groups_ids))
+    db.users.update_one({'chat_id': user_id},
+                        {'$set': {'groups_ids': groups_ids}})
+    db.active_group.delete_one({'user_id': user_id})
+    db.active_group.insert_one({'user_id': user_id, 'chat_id': chat_id})
+
+    await title(msg, chat_id)
+
+    if user == None:
+        return
+
+    await bot.send_message(
+        user['chat_id'],
+        await get_msg(msg, 'new_room'),
+        reply_markup=types.ReplyKeyboardRemove()
+    )
+    await change_state(msg, 1)
 
 
 @dp.message_handler(state='*', content_types=['voice_chat_started'])
@@ -897,7 +980,18 @@ async def update_members_info(msg):
 
 @dp.message_handler(state='*', content_types=['new_chat_members'])
 async def joined_the_group(msg):
+    print('new_chat_members')
     await update_members_info(msg)
+
+    '''
+    for member in message.new_chat_members:
+        if member.id == bot.id:
+            user = db.users.find_one({'chat_id': str(msg['from']['id'])})
+            groups_ids = user.groups_ids
+            groups_ids.append(str(msg.chat.id))
+            db.users.update_one({'chat_id': str(msg['from']['id'])},
+                {'$set': {'groups_ids': list(set(groups_id))}})
+    '''
 
 
 @dp.message_handler(state='*', content_types=['text'])
@@ -907,12 +1001,12 @@ async def main_logic(msg):
         if msg.text == await get_text(msg, 'buttons', 'create_room_in_group'):
             await bot.send_message(
                 msg.chat.id,
-                await get_msg(msg, 'make_room')
+                await get_msg(msg, 'make_room_in_group')
             )
         elif msg.text == await get_text(msg, 'buttons', 'create_room_in_channel'):
             await bot.send_message(
                 msg.chat.id,
-                await get_msg(msg, 'coming_soon')
+                await get_msg(msg, 'make_room_in_channel')
             )
         elif msg.text == await get_text(msg, 'buttons', 'to_hub'):
             button = types.InlineKeyboardButton(

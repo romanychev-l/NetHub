@@ -5,6 +5,11 @@ messages = {
 'пользователей по ссылке и закрепление сообщений.'
 ),
 
+'check_bot_privilege_channel': (
+'Сначала сделайте бота администратором, дайте ему права на добавление '
+'пользователей по ссылке и отправку сообщений.'
+),
+
 'start_in_chat': (
 'Привет!\nДля использования бота нужно пройти короткую регистрацию в один шаг. '
 'Выберите интересную вам категорию, а затем отметьте теги. Категории и теги можно '
@@ -20,7 +25,7 @@ messages = {
 'нажмите на кнопку под этим сообщением и перейдите по ссылке.'
 ),
 
-'make_room': (
+'make_room_in_group': (
 'Чтобы создать комнату в группе:\n'
 '1. Добавьте меня в группу, в которой будет запущен голосовой чат.\n'
 '2. Сделайте бота администратором группы. Проверьте, чтобы у бота были права '
@@ -28,6 +33,15 @@ messages = {
 '3. Отправьте в группу команду /new_room. Бот реагирует только на команды от '
 'администраторов.\n'
 '4. Перейдите в этот чат и следуйте указаниям бота.'
+),
+
+'make_room_in_channel': (
+'Чтобы создать комнату в канале:\n'
+'1. Добавьте меня в канал, в котором будет запущен голосовой чат.\n'
+'2. Сделайте бота администратором канала. Проверьте, чтобы у бота были права '
+' на отправку сообщений.\n'
+'3. Перешлите боту любое сообщение из канала.\n'
+'4. Cледуйте указаниям бота.'
 ),
 
 'settings': (
@@ -95,6 +109,11 @@ messages = {
 'link users and post messages.'
 ),
 
+'check_bot_privilege_channel': (
+'First, make the bot an administrator, give it the rights to add users by link '
+'and send messages.'
+),
+
 'start_in_chat': (
 'Hello!\nTo use the bot, you need to go through a short registration in one step. '
 'Select the category you are interested in and then check the tags. Categories and tags can be '
@@ -110,7 +129,7 @@ messages = {
 'click on the button below this message and follow the link.'
 ),
 
-'make_room': (
+'make_room_group': (
 'To create a room in a group:\n'
 '1. Add me to the group where the voice chat will start.\n'
 '2. Make the bot a group admin. Check that the bot has rights '
@@ -118,6 +137,14 @@ messages = {
 '3. Send the /new_room command to the group. The bot only responds to commands from '
 'administrators.\n'
 '4. Go to this chat and follow the bot\'s instructions.'
+),
+
+'make_room_in_channel': (
+'To create a channel room:\n'
+'1. Add me to the channel in which the voice chat will be launched.\n'
+'2. Make the bot a channel administrator. Check that the bot has permission to send messages.\n'
+'3. Forward the bot any message from the channel.\n'
+'4. Follow the bot\'s instructions.'
 ),
 
 'settings': (
