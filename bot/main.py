@@ -216,7 +216,7 @@ async def check_chat(msg):
 
 
 async def check_member(msg):
-    admins = await bot.get_chat_administrators(msg.forward_from_chat.id)
+    admins = await bot.get_chat_administrators(msg.chat.id)
     for admin in admins:
         if admin['user']['id'] == msg['from']['id']:
             return False
@@ -250,6 +250,14 @@ async def check_bot_privilege(msg):
         await get_msg(msg, 'check_bot_privilege')
     )
 
+    return True
+
+
+async def check_member_channel(msg):
+    admins = await bot.get_chat_administrators(msg.forward_from_chat.id)
+    for admin in admins:
+        if admin['user']['id'] == msg['from']['id']:
+            return False
     return True
 
 
@@ -912,13 +920,12 @@ async def state_2(msg):
     await change_state(msg, 0)
 
 
-@dp.message_handler(lambda message: message.forward_from_chat,
+@dp.message_handler(lambda msg: msg.forward_from_chat, state='*',
     content_types=types.ContentTypes.ANY)
 async def forward_from_chat(msg):
     print('forward_from_chat')
-    if (await check_chat(msg) or await check_member(msg) or
+    if (await check_chat(msg) or await check_member_channel(msg) or
         await check_bot_privilege_channel(msg)): return
-
 
     chat_id = str(msg.forward_from_chat.id)
     user_id = str(msg['from']['id'])
@@ -997,6 +1004,7 @@ async def joined_the_group(msg):
 @dp.message_handler(state='*', content_types=['text'])
 async def main_logic(msg):
     print('main_logic')
+    print(msg)
     if msg.chat.id > 0:
         if msg.text == await get_text(msg, 'buttons', 'create_room_in_group'):
             await bot.send_message(
