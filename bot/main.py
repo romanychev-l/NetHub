@@ -672,7 +672,7 @@ async def start(msg):
                 reply_markup=await everytime_keyboard(msg)
             )
 
-
+'''
 @dp.message_handler(state='*', commands=['help'])
 async def help(msg):
     print('help')
@@ -683,7 +683,7 @@ async def help(msg):
         msg.chat.id,
         await get_msg(msg, 'help_in_group')
     )
-
+'''
 
 async def delete_command(text):
     if text[0] == '/':
@@ -790,7 +790,7 @@ async def send_room(msg):
     ).replace('_', '\\n')
     button = types.InlineKeyboardButton(
         await get_text(msg, 'buttons', 'to_hub'),
-        url='https://nethub.club/#/?m=room&room=' + str(msg.chat.id)
+        url='https://nethub.club/#/?m=room&room=' + chat_id
     )
     keyboard = types.InlineKeyboardMarkup().add(button)
     res = await bot.send_message(
@@ -804,7 +804,7 @@ async def send_room(msg):
         disable_notification=True
     )
 
-
+'''
 @dp.message_handler(state='*', commands=['delete_room'])
 async def delete_room(msg):
     print('delete_room')
@@ -816,7 +816,7 @@ async def delete_room(msg):
         chat_id,
         await get_msg(msg, 'room_is_delete')
     )
-
+'''
 
 @dp.message_handler(state='*', commands=['new_room'])
 async def state_0(msg):
@@ -920,7 +920,7 @@ async def state_2(msg):
     await change_state(msg, 0)
 
 
-@dp.message_handler(lambda msg: msg.forward_from_chat, state='*',
+@dp.message_handler(lambda msg: msg.forward_from_chat,
     content_types=types.ContentTypes.ANY)
 async def forward_from_chat(msg):
     print('forward_from_chat')
