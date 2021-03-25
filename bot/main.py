@@ -904,7 +904,16 @@ async def state_2(msg):
             await get_msg(msg, 'time_is_correct')
         )
         return
+
     timestamp += user_time
+
+    time_now = int(datetime.datetime.timestamp(datetime.datetime.now()))
+    if timestamp < time_now:
+        await bot.send_message(
+            user_id,
+            await get_msg(msg, 'past_tense')
+        )
+        return
 
     db.groups.update_one({'chat_id': chat_id},
                         {"$set": {'date': timestamp}})

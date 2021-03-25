@@ -83,6 +83,10 @@ messages = {
 'Создайте комнату по команде /new_room.'
 ),
 
+'past_tense': (
+'Вы ввели прошедшее время. Попробуйте еще раз.'
+),
+
 'room_is_delete': (
 'Комната удалена.'
 ),
@@ -200,6 +204,10 @@ messages = {
 
 'room_is_none': (
 'Create a room on command /new_room'
+),
+
+'past_tense': (
+'You have entered the past tense. Try again.'
 ),
 
 'room_is_delete': (
