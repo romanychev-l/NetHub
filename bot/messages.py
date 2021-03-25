@@ -49,6 +49,18 @@ messages = {
 'выбирать неоднократно, используя кнопку Назад.'
 ),
 
+'list_settings': (
+'Выберите нужную настройку.'
+),
+
+'change_language': (
+'Выберите нужный язык.'
+),
+
+'change_language_success': (
+'Язык установлен.'
+),
+
 'coming_soon': (
 'Эта функция появится очень скоро!'
 ),
@@ -92,6 +104,10 @@ messages = {
 'Формат времени неверный, попробуйте еще раз.'
 ),
 
+'publish': (
+'Отправить сообщение в канал/группу о том, что комната создана?'
+),
+
 'complete': (
 'Комната создана!\nВ назначенное время запустите голосовой чат.'
 ),
@@ -129,7 +145,7 @@ messages = {
 'click on the button below this message and follow the link.'
 ),
 
-'make_room_group': (
+'make_room_in_group': (
 'To create a room in a group:\n'
 '1. Add me to the group where the voice chat will start.\n'
 '2. Make the bot a group admin. Check that the bot has rights '
@@ -150,6 +166,18 @@ messages = {
 'settings': (
 'Select the category you are interested in and then check the tags; categories and tags can be '
 'select repeatedly using the Back button.'
+),
+
+'list_settings': (
+'Select the setting you want.'
+),
+
+'change_language': (
+'Select the language you want.'
+),
+
+'change_language_success': (
+'The language is set.'
 ),
 
 'coming_soon': (
@@ -193,6 +221,10 @@ messages = {
 
 'time_is_correct': (
 'The time format is incorrect, please try again.'
+),
+
+'publish': (
+'Send a message to the channel / group that the room has been created?'
 ),
 
 'complete': (

@@ -74,7 +74,7 @@ class TestStates(Helper):
     TEST_STATE_3 = ListItem()
     TEST_STATE_4 = ListItem()
     TEST_STATE_5 = ListItem()
-
+    TEST_STATE_6 = ListItem()
 
 OK = '✅'
 NOK = '❌'
@@ -909,6 +909,20 @@ async def state_2(msg):
     db.groups.update_one({'chat_id': chat_id},
                         {"$set": {'date': timestamp}})
 
+    but1 = types.KeyboardButton(await get_text(msg, 'buttons',
+        'ok_publish'))
+    but2 = types.KeyboardButton(await get_text(msg, 'buttons',
+        'nok_publish'))
+    publish_keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True,
+        ).add(but1).add(but2)
+
+    await bot.send_message(
+        user_id,
+        await get_msg(msg, 'publish'),
+        reply_markup=publish_keyboard
+    )
+    await change_state(msg, 6)
+    '''
     await send_room(msg)
     db.active_group.delete_one({'user_id': user_id})
 
@@ -918,10 +932,25 @@ async def state_2(msg):
         reply_markup=await everytime_keyboard(msg)
     )
     await change_state(msg, 0)
+    '''
+
+
+@dp.message_handler(state=TestStates.TEST_STATE_6, content_types=['text'])
+async def publish(msg):
+    print('publish')
+    if msg.text == await get_text(msg, 'buttons', 'ok_publish'):
+        await send_room(msg)
+
+    await bot.send_message(
+        msg.chat.id,
+        await get_msg(msg, 'complete'),
+        reply_markup=await everytime_keyboard(msg)
+    )
+    await change_state(msg, 0)
 
 
 @dp.message_handler(lambda msg: msg.forward_from_chat,
-    content_types=types.ContentTypes.ANY)
+    content_types=types.ContentTypes.ANY, state='*')
 async def forward_from_chat(msg):
     print('forward_from_chat')
     if (await check_chat(msg) or await check_member_channel(msg) or
@@ -1000,11 +1029,19 @@ async def joined_the_group(msg):
                 {'$set': {'groups_ids': list(set(groups_id))}})
     '''
 
+async def change_language(msg):
+    code = 'en'
+    if msg.text == 'Русский':
+        code = 'ru'
+    db.users.update_one({'chat_id': str(msg.chat.id)},
+        {'$set' : {'language_code': code}})
 
 @dp.message_handler(state='*', content_types=['text'])
 async def main_logic(msg):
     print('main_logic')
     print(msg)
+    list_language = ['English', 'Русский']
+
     if msg.chat.id > 0:
         if msg.text == await get_text(msg, 'buttons', 'create_room_in_group'):
             await bot.send_message(
@@ -1029,12 +1066,51 @@ async def main_logic(msg):
                 reply_markup=keyboard
             )
         elif msg.text == await get_text(msg, 'buttons', 'settings'):
+            but1 = types.KeyboardButton(await get_text(msg, 'buttons',
+                'change_category'))
+            but2 = types.KeyboardButton(await get_text(msg, 'buttons',
+                'change_language'))
+            but3 = types.KeyboardButton(await get_text(msg, 'buttons',
+                'back_to_general'))
+            settings_keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True,
+                ).add(but1).add(but2).add(but3)
+
+            await bot.send_message(
+                msg.chat.id,
+                await get_msg(msg, 'list_settings'),
+                reply_markup=settings_keyboard
+            )
+        elif msg.text == await get_text(msg, 'buttons', 'change_language'):
+            but1 = types.KeyboardButton('English')
+            but2 = types.KeyboardButton('Русский')
+            language_keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True,
+                ).add(but1).add(but2)
+
+            await bot.send_message(
+                msg.chat.id,
+                await get_msg(msg, 'change_language'),
+                reply_markup=language_keyboard
+            )
+        elif msg.text in list_language:
+            await change_language(msg)
+            await bot.send_message(
+                msg.chat.id,
+                await get_msg(msg, 'change_language_success'),
+                reply_markup=await everytime_keyboard(msg)
+            )
+        elif msg.text == await get_text(msg, 'buttons', 'change_category'):
             await bot.send_message(
                 msg.chat.id,
                 await get_msg(msg, 'settings'),
                 reply_markup=await base_categories_keyboard(msg)
             )
             await change_state(msg, 5)
+        elif msg.text == await get_text(msg, 'buttons', 'back_to_general'):
+            await bot.send_message(
+                msg.chat.id,
+                await get_msg(msg, 'start_in_chat_with_reg'),
+                reply_markup=await everytime_keyboard(msg)
+            )
 
 
 def main():
