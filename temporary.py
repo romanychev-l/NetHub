@@ -52,7 +52,7 @@ def update_home():
 def check_time():
     try:
         timestamp = int(datetime.datetime.timestamp(datetime.datetime.now()))
-        timestamp += 15*60
+        timestamp -= 15*60
         db.groups.delete_many({'status': 'offline',
             'date': {'$lt' : timestamp}})
         print('Success check_time')
@@ -63,7 +63,7 @@ def check_time():
 
 if __name__ == '__main__':
     while True:
-        #update_home()
+        update_home()
         check_time()
 
         time.sleep(5)
