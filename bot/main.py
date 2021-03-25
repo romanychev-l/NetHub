@@ -733,7 +733,7 @@ async def title(msg, chat_id):
             'chat_id': chat_id,
             'status': 'offline',
             'inviteLink': chat.invite_link,
-            'date': 0,
+            'date': int(datetime.datetime.timestamp(datetime.datetime.now())),
             'admins': await get_admins(chat_id),
             'members': await get_members(chat_id),
             'subcategories': [],
