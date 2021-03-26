@@ -220,6 +220,12 @@ async def check_member(msg):
     for admin in admins:
         if admin['user']['id'] == msg['from']['id']:
             return False
+
+    await bot.send_message(
+        msg.chat.id,
+        await get_msg(msg, 'check_member')
+    )
+
     return True
 
 
@@ -258,6 +264,12 @@ async def check_member_channel(msg):
     for admin in admins:
         if admin['user']['id'] == msg['from']['id']:
             return False
+
+    await bot.send_message(
+        msg['from']['id'],
+        await get_msg(msg, 'check_member')
+    )
+
     return True
 
 
@@ -278,6 +290,20 @@ async def check_bot_privilege_channel(msg):
 
     return True
 
+
+async def check_active_group(msg, chat_id, user_id):
+    group = db.active_group.find_one({'chat_id': chat_id})
+    if group == None or group['user_id'] == user_id:
+        return False
+
+    if msg.forward_from_chat != None:
+        chat_id = user_id
+
+    await bot.send_message(
+        chat_id,
+        await get_msg(msg, 'check_active_group')
+    )
+    return True
 
 async def get_members(chat_id):
     members = await bot.get_chat_members_count(chat_id)
@@ -824,9 +850,12 @@ async def state_0(msg):
     if (not await check_chat(msg) or await check_member(msg) or
             await check_bot_privilege(msg)): return
 
-
     chat_id = str(msg.chat.id)
     user_id = str(msg['from']['id'])
+
+    if await check_active_group(msg, chat_id, user_id):
+        return
+
     db.groups.delete_one({'chat_id': chat_id})
 
     user = db.users.find_one({'chat_id': user_id})
@@ -972,6 +1001,10 @@ async def forward_from_chat(msg):
 
     chat_id = str(msg.forward_from_chat.id)
     user_id = str(msg['from']['id'])
+
+    if await check_active_group(msg, chat_id, user_id):
+        return
+
     db.groups.delete_one({'chat_id': chat_id})
 
     user = db.users.find_one({'chat_id': user_id})

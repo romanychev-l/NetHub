@@ -10,6 +10,10 @@ messages = {
 'пользователей по ссылке и отправку сообщений.'
 ),
 
+'check_member': (
+'Создавать комнату может только администратор.'
+),
+
 'start_in_chat': (
 'Привет!\nДля использования бота нужно пройти короткую регистрацию в один шаг. '
 'Выберите интересную вам категорию, а затем отметьте теги. Категории и теги можно '
@@ -83,6 +87,10 @@ messages = {
 'Чтобы продолжить создание комнаты, перейдите в чат с @nethub_bot.'
 ),
 
+'check_active_group': (
+'В данный момент комнату создает другой администратор.'
+),
+
 'room_is_none': (
 'Создайте комнату по команде /new_room.'
 ),
@@ -136,6 +144,10 @@ messages = {
 'check_bot_privilege_channel': (
 'First, make the bot an administrator, give it the rights to add users by link '
 'and send messages.'
+),
+
+'check_member': (
+'Only an administrator can create a room.'
 ),
 
 'start_in_chat': (
@@ -208,6 +220,10 @@ messages = {
 
 'go_to_bot': (
 'To continue creating a room, go to the chat with the @nethub_bot.'
+),
+
+'check_active_group': (
+'Another administrator is currently creating the room.'
 ),
 
 'room_is_none': (
