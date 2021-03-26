@@ -844,6 +844,11 @@ async def state_0(msg):
         return
 
     await bot.send_message(
+        chat_id,
+        await get_msg(msg, 'go_to_bot')
+    )
+
+    await bot.send_message(
         user['chat_id'],
         await get_msg(msg, 'new_room'),
         reply_markup=types.ReplyKeyboardRemove()

@@ -79,6 +79,10 @@ messages = {
 'Как будет называться Ваша комната?'
 ),
 
+'go_to_bot': (
+'Чтобы продолжить создание комнаты, перейдите в чат с @nethub_bot.'
+),
+
 'room_is_none': (
 'Создайте комнату по команде /new_room.'
 ),
@@ -200,6 +204,10 @@ messages = {
 
 'new_room': (
 'What name do you want for your room?'
+),
+
+'go_to_bot': (
+'To continue creating a room, go to the chat with the @nethub_bot.'
 ),
 
 'room_is_none': (
