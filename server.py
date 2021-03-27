@@ -44,7 +44,7 @@ def get_category():
         category_id = int(request.args.get('id'))
         category_amount = int(request.args.get('amount'))
         groups_data = db.groups.find(
-            {'category_id': category_id}
+            {'category_id': category_id, 'created': 1}
         ).sort('members', -1).limit(category_amount)
 
         category = []
@@ -60,7 +60,7 @@ def get_category():
 def get_room():
     try:
         room_id = request.args.get('id')
-        room = db.groups.find_one({'chat_id': room_id})
+        room = db.groups.find_one({'chat_id': room_id, 'created': 1})
 
         return jsonify(func.correct_view(room))
     except:
@@ -73,7 +73,7 @@ def search():
         # https://romanychev.online/nethub/search?text=Кто
         text = request.args.get('text').lower()
         groups_data = db.groups.find(
-            {'title': {'$regex': text, '$options':'$i'}}
+            {'title': {'$regex': text, '$options':'$i'}, 'created': 1}
         )
 
         res = []
