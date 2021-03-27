@@ -65,6 +65,10 @@ messages = {
 'Язык установлен.'
 ),
 
+'feedback': (
+'Будем рады любым отзывам и предложениям - @nethub_feedback'
+),
+
 'coming_soon': (
 'Эта функция появится очень скоро!'
 ),
@@ -198,6 +202,10 @@ messages = {
 
 'change_language_success': (
 'The language is set.'
+),
+
+'feedback': (
+'We will be glad to receive any feedback and suggestions - @nethub_feedback'
 ),
 
 'coming_soon': (

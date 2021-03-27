@@ -13,6 +13,7 @@ text = {
 
             'change_category': 'Изменить мои категории',
             'change_language': 'Изменить язык',
+            'feedback': 'Обратная связь',
             'back_to_general': 'Назад'
         },
 
@@ -29,6 +30,7 @@ text = {
 
             'change_category': 'Change my categories',
             'change_language': 'Change the language',
+            'feedback': 'Feedback',
             'back_to_general': 'Back'
         }
     },

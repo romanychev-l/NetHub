@@ -1112,9 +1112,11 @@ async def main_logic(msg):
             but2 = types.KeyboardButton(await get_text(msg, 'buttons',
                 'change_language'))
             but3 = types.KeyboardButton(await get_text(msg, 'buttons',
+                'feedback'))
+            but4 = types.KeyboardButton(await get_text(msg, 'buttons',
                 'back_to_general'))
             settings_keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True,
-                ).add(but1).add(but2).add(but3)
+                ).add(but1).add(but2).add(but3).add(but4)
 
             await bot.send_message(
                 msg.chat.id,
@@ -1150,6 +1152,12 @@ async def main_logic(msg):
             await bot.send_message(
                 msg.chat.id,
                 await get_msg(msg, 'start_in_chat_with_reg'),
+                reply_markup=await everytime_keyboard(msg)
+            )
+        elif msg.text == await get_text(msg, 'buttons', 'feedback'):
+            await bot.send_message(
+                msg.chat.id,
+                await get_msg(msg, 'feedback'),
                 reply_markup=await everytime_keyboard(msg)
             )
 
