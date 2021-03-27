@@ -759,13 +759,15 @@ async def title(msg, chat_id):
             'chat_id': chat_id,
             'status': 'offline',
             'inviteLink': chat.invite_link,
-            'date': int(datetime.datetime.timestamp(datetime.datetime.now())),
+            'date': 0,
+            'deadline': int(datetime.datetime.timestamp(datetime.datetime.now())),
             'admins': await get_admins(chat_id),
             'members': await get_members(chat_id),
             'subcategories': [],
             'category_id': -1,
             'logo': res,
-            'language_code': msg['from']['language_code']
+            'language_code': msg['from']['language_code'],
+            'created': 0
         }
         db.groups.insert_one(voice)
     else:
@@ -950,7 +952,8 @@ async def state_2(msg):
         return
 
     db.groups.update_one({'chat_id': chat_id},
-                        {"$set": {'date': timestamp}})
+                        {"$set": {'date': timestamp, 'deadline': timestamp,
+                        'created': 1}})
 
     but1 = types.KeyboardButton(await get_text(msg, 'buttons',
         'ok_publish'))
@@ -965,17 +968,6 @@ async def state_2(msg):
         reply_markup=publish_keyboard
     )
     await change_state(msg, 6)
-    '''
-    await send_room(msg)
-    db.active_group.delete_one({'user_id': user_id})
-
-    await bot.send_message(
-        user_id,
-        await get_msg(msg, 'complete'),
-        reply_markup=await everytime_keyboard(msg)
-    )
-    await change_state(msg, 0)
-    '''
 
 
 @dp.message_handler(state=TestStates.TEST_STATE_6, content_types=['text'])
@@ -983,6 +975,8 @@ async def publish(msg):
     print('publish')
     if msg.text == await get_text(msg, 'buttons', 'ok_publish'):
         await send_room(msg)
+
+    db.active_group.delete_one({'user_id': str(msg.chat.id)})
 
     await bot.send_message(
         msg.chat.id,

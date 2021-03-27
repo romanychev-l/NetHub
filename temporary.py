@@ -26,7 +26,7 @@ db = client[config.mongo_db_name]
 def update_home():
     try:
         n = 13
-        groups_data = db.groups.find({}, {'_id' : 0}).sort('members', -1).limit(10)
+        groups_data = db.groups.find({'created': 1}, {'_id' : 0}).sort('members', -1).limit(10)
         groups = list(map(func.correct_view, groups_data))
         categories = [[] for i in range(n)]
 
@@ -55,7 +55,7 @@ def check_time():
         timestamp -= 15*60
 
         groups = db.groups.find({'status': 'offline',
-            'date': {'$lt' : timestamp}})
+            'deadline': {'$lt' : timestamp}})
 
         for group in groups:
             db.active_group.delete_one({'chat_id': group['chat_id']})
