@@ -312,6 +312,21 @@ async def get_members(chat_id):
     return members
 
 
+async def change_language(msg):
+    code = 'en'
+    if msg.text == 'Русский':
+        code = 'ru'
+    db.users.update_one({'chat_id': str(msg.chat.id)},
+        {'$set' : {'language_code': code}})
+
+
+async def language_keyboard():
+    but1 = types.KeyboardButton('English')
+    but2 = types.KeyboardButton('Русский')
+    return types.ReplyKeyboardMarkup(resize_keyboard=True,
+        ).add(but1).add(but2)
+
+
 async def get_keyboard(msg, index):
     user_id = str(msg.chat.id)
     chat_id = await get_chat_id(user_id)
@@ -682,15 +697,15 @@ async def start(msg):
                 'chat_id': user_id,
                 'groups_ids': [],
                 'subcategories': [[] for i in range(13)],
-                'language_code': msg['from']['language_code']
+                'language_code': 'en'
             })
 
             await bot.send_message(
                 user_id,
-                await get_msg(msg, 'start_in_chat'),
-                reply_markup=await base_categories_keyboard(msg)
+                await get_msg(msg, 'change_language'),
+                reply_markup=await language_keyboard()
             )
-            await change_state(msg, 5)
+            #await change_state(msg, 5)
         else:
             await bot.send_message(
                 user_id,
@@ -721,7 +736,7 @@ async def delete_command(text):
 
 
 async def title(msg, chat_id):
-    text = await delete_command(msg.text)
+    #text = await delete_command(msg.text)
     voice = db.groups.find_one({'chat_id': chat_id})
 
     answer = ''
@@ -1070,12 +1085,6 @@ async def joined_the_group(msg):
                 {'$set': {'groups_ids': list(set(groups_id))}})
     '''
 
-async def change_language(msg):
-    code = 'en'
-    if msg.text == 'Русский':
-        code = 'ru'
-    db.users.update_one({'chat_id': str(msg.chat.id)},
-        {'$set' : {'language_code': code}})
 
 @dp.message_handler(state='*', content_types=['text'])
 async def main_logic(msg):
@@ -1124,15 +1133,10 @@ async def main_logic(msg):
                 reply_markup=settings_keyboard
             )
         elif msg.text == await get_text(msg, 'buttons', 'change_language'):
-            but1 = types.KeyboardButton('English')
-            but2 = types.KeyboardButton('Русский')
-            language_keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True,
-                ).add(but1).add(but2)
-
             await bot.send_message(
                 msg.chat.id,
                 await get_msg(msg, 'change_language'),
-                reply_markup=language_keyboard
+                reply_markup=await language_keyboard()
             )
         elif msg.text in list_language:
             await change_language(msg)

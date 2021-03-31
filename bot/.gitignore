@@ -1,2 +1,4 @@
 profile_photos/
 prod.py
+api_config.py
+session_name.session
