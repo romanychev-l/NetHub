@@ -44,9 +44,8 @@ async def tg_fm(event):
 
         res = ''
         try:
-            with open('avatar', 'wb') as f:
-                photos = await client.get_profile_photos(channel_username)
-                photo = await client.download_media(photos[-1], channel_username)
+            photos = await client.get_profile_photos(channel_username)
+            photo = await client.download_media(photos[-1], channel_username)
 
             res = 0
             with open(channel_username + '.jpg', 'rb') as f:
