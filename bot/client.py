@@ -71,7 +71,7 @@ async def tg_fm(event):
             'inviteLink': 'https://t.me/' + channel_username,
             'date': now_time,
             'deadline': now_time,
-            'admins': '',
+            'admins': [],
             'members': group_call.call.participants_count,
             'subcategories': [],
             'category_id': -1,
