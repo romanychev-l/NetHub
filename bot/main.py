@@ -139,11 +139,11 @@ async def get_chat_id(user_id):
 
 
 async def onetime_keyboard(msg):
-    but0 = types.KeyboardButton(await get_text(msg, 'buttons',
-        'create_room_in_group'))
+    but0 = types.KeyboardButton(await get_text(msg, 'buttons', 'to_hub'))
     but1 = types.KeyboardButton(await get_text(msg, 'buttons',
+        'create_room_in_group'))
+    but2 = types.KeyboardButton(await get_text(msg, 'buttons',
         'create_room_in_channel'))
-    but2 = types.KeyboardButton(await get_text(msg, 'buttons', 'to_hub'))
     but3 = types.KeyboardButton(await get_text(msg, 'buttons', 'settings'))
 
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True,
@@ -152,11 +152,11 @@ async def onetime_keyboard(msg):
 
 
 async def everytime_keyboard(msg):
-    but0 = types.KeyboardButton(await get_text(msg, 'buttons',
-        'create_room_in_group'))
+    but0 = types.KeyboardButton(await get_text(msg, 'buttons', 'to_hub'))
     but1 = types.KeyboardButton(await get_text(msg, 'buttons',
+        'create_room_in_group'))
+    but2 = types.KeyboardButton(await get_text(msg, 'buttons',
         'create_room_in_channel'))
-    but2 = types.KeyboardButton(await get_text(msg, 'buttons', 'to_hub'))
     but3 = types.KeyboardButton(await get_text(msg, 'buttons', 'settings'))
 
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True).add(
@@ -782,7 +782,9 @@ async def title(msg, chat_id):
             'category_id': -1,
             'logo': res,
             'language_code': msg['from']['language_code'],
-            'created': 0
+            'created': 0,
+            'username': msg.chat.username,
+            'type': 'nethub'
         }
         db.groups.insert_one(voice)
     else:

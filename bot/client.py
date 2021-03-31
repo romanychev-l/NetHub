@@ -69,7 +69,7 @@ async def tg_fm(event):
         group = {
             'chat_id': channel_id,
             'status': 'online',
-            'inviteLink': '@' + channel_username,
+            'inviteLink': 'https://t.me/' + channel_username,
             'date': now_time,
             'deadline': now_time,
             'admins': '',
