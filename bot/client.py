@@ -89,7 +89,7 @@ async def tg_fm(event):
 async def check():
     while True:
         print('check')
-        groups = db.groups.find({'type': 'tgfm'})
+        groups = db.groups.find({'status': 'online'})
         for group in groups:
             channel = await client(functions.channels.GetFullChannelRequest(
                 channel=group['username']
