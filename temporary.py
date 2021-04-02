@@ -25,7 +25,7 @@ db = client[config.mongo_db_name]
 
 def update_home():
     try:
-        n = 13
+        n = 14
         groups_data = db.groups.find({'created': 1}, {'_id' : 0}).sort('members', -1).limit(10)
         groups = list(map(func.correct_view, groups_data))
         categories = [[] for i in range(n)]

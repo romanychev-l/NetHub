@@ -560,7 +560,9 @@ async def date_inline(c):
     msg = c.message
 
     d = c.data
-    dt = datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
+    dt = datetime.datetime.now() + datetime.timedelta(hours=3)
+    dt = dt.replace(hour=0, minute=0, second=0)
+
     for day in days:
         if d == day:
             break
@@ -597,7 +599,7 @@ async def inline(c):
             )
         group = db.groups.find_one({'chat_id': chat_id})
         list_categories = ''
-        if group['category_id'] != -1:
+        if group['category_id'] != 13:
             categories = await get_cat(msg)
             list_categories = list(
                 categories[group['category_id']].keys())[0]
@@ -609,7 +611,8 @@ async def inline(c):
             ' '.join(group['subcategories']) + '\n',
             await get_msg(c.message, 'date'), sep='\n'
         ).replace('_', '\\n')
-        dt = datetime.datetime.now()
+
+        dt = datetime.datetime.now() + datetime.timedelta(hours=3)
 
         buts = []
         global days
@@ -634,7 +637,7 @@ async def inline(c):
     elif d == 'Назад':
         db.groups.update_one({'chat_id': chat_id},
                             {"$set": {'subcategories': [],
-                                      'category_id': -1}})
+                                      'category_id': 13}})
 
         await bot.edit_message_reply_markup(
             user_id,
@@ -784,7 +787,7 @@ async def title(msg, chat_id):
             'admins': [],#await get_admins(chat_id),
             'members': 0,#await get_members(chat_id),
             'subcategories': [],
-            'category_id': -1,
+            'category_id': 13,
             'logo': res,
             'language_code': msg['from']['language_code'],
             'created': 0,
@@ -822,7 +825,7 @@ async def get_room_text(msg, chat_id):
 
     list_categories = group['subcategories']
 
-    if group['category_id'] != -1:
+    if group['category_id'] != 13:
         categories = await get_cat(msg)
         category = list(
             categories[group['category_id']].keys())[0]
@@ -987,7 +990,7 @@ async def correct_time(user_time):
 
 
 @dp.callback_query_handler(lambda c: c.data == 'Опубликовать' or
-    c.data == 'Отказать', state=TestStates.TEST_STATE_0)
+    c.data == 'Отказать', state='*')
 async def admin_callback(c):
     print(c)
     channel_id = -1001370003626
@@ -1002,7 +1005,7 @@ async def admin_callback(c):
         pass
 
     await bot.edit_message_reply_markup(
-        admin_id,
+        admin_chat_id,
         message_id=c.message.message_id
     )
 

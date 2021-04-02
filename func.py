@@ -5,13 +5,14 @@ def correct_view(obj):
         res['title'] = obj['title']
         res['admins'] = obj['admins']
         res['members'] = obj['members']
-        res['inviteLink'] = obj['inviteLink']
+        res['inviteLink'] = 'https://t.me/' + obj['username']
+        res['description'] = obj['description']
         res['logo'] = obj['logo']
 
         status = obj['status']
         res['status'] = status
         if status == 'offline':
-            res['date'] = (obj['date'] - 3600)* 1000
+            res['date'] = obj['date'] * 1000
 
         res['subcategories'] = obj['subcategories']
         category_id = obj['category_id']
