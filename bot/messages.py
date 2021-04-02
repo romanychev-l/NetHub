@@ -40,12 +40,13 @@ messages = {
 ),
 
 'make_room_in_channel': (
-'Чтобы создать комнату в канале:\n'
-'1. Добавьте меня в канал, в котором будет запущен голосовой чат.\n'
-'2. Сделайте бота администратором канала. Проверьте, чтобы у бота были права '
-' на отправку сообщений.\n'
-'3. Перешлите боту любое сообщение из канала.\n'
-'4. Cледуйте указаниям бота.'
+'Для регистрации комнаты перешлите мне сообщение, в котором содержится анонс '
+'голосового чата, из вашего канала. Если у вас нет сообщения с анонсом - '
+'перешлите любое сообщение из канала.'
+),
+
+'is_announcement':(
+'Это сообщение является анонсом голосового чата?'
 ),
 
 'settings': (
@@ -73,10 +74,19 @@ messages = {
 'Эта функция появится очень скоро!'
 ),
 
+'voicechat_started': (
+' - голосовой чат уже начался'
+),
+
+'room_created': (
+'Комната для этого канала уже создана.'
+),
+
 'title': (
-'Название установлено.\nПользуясь кнопками в этом сообщении, '
+'Описание установлено.\nПользуясь кнопками в этом сообщении, '
 'выберите категорию, а затем отметьте теги, которые соответствуют '
-'тематике Вашей комнаты.'
+'тематике Вашей комнаты. Вы можете пропустить этот шаг - просто нажмите на '
+'кнопку "Завершить".'
 ),
 
 'change_title': (
@@ -85,6 +95,10 @@ messages = {
 
 'new_room': (
 'Как будет называться Ваша комната?'
+),
+
+'description': (
+'Введите описание комнаты.'
 ),
 
 'go_to_bot': (
@@ -180,11 +194,13 @@ messages = {
 ),
 
 'make_room_in_channel': (
-'To create a channel room:\n'
-'1. Add me to the channel in which the voice chat will be launched.\n'
-'2. Make the bot a channel administrator. Check that the bot has permission to send messages.\n'
-'3. Forward the bot any message from the channel.\n'
-'4. Follow the bot\'s instructions.'
+'To register a room, send me a message containing a voice chat announcement '
+'from your channel. If you do not have a message with an announcement - '
+'forward any message from the channel.'
+),
+
+'is_announcement':(
+'Is this message a voice chat announcement?'
 ),
 
 'settings': (
@@ -212,10 +228,18 @@ messages = {
 'This feature is coming very soon!'
 ),
 
+'voicechat_started': (
+' - voice chat has already started'
+),
+
+'room_created': (
+'The room for this channel has already been created.'
+),
+
 'title': (
-'Title is set.\nUsing buttons in this message, '
-'select a category and mark the tags that match '
-'the subject of your room.'
+'The description is set.\nUsing the buttons in this message, select a category '
+'and then check the tags that match the theme of your room. You can skip this '
+'step - just click on the "To complete" button.'
 ),
 
 'change_title': (
@@ -224,6 +248,10 @@ messages = {
 
 'new_room': (
 'What name do you want for your room?'
+),
+
+'description': (
+'Enter a description for the room.'
 ),
 
 'go_to_bot': (

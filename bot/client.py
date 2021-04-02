@@ -41,7 +41,6 @@ async def tg_fm(event):
         ))
         #print(group_call.stringify())
 
-
         res = ''
         try:
             photos = await client.get_profile_photos(channel_username)
@@ -79,7 +78,7 @@ async def tg_fm(event):
             'language_code': 'en',
             'created': 1,
             'title': title,
-            'type': 'tgfm',
+            'type': 'channel',
             'username': channel_username
         }
         db.groups.delete_one({'chat_id': channel_id})
@@ -89,23 +88,38 @@ async def tg_fm(event):
 async def check():
     while True:
         print('check')
-        groups = db.groups.find({'status': 'online'})
+
+        timestamp = int(datetime.datetime.timestamp(datetime.datetime.now()))
+
+        groups = db.groups.find({'type': 'channel',
+            'deadline': {'$lt' : timestamp}})
+
         for group in groups:
-            channel = await client(functions.channels.GetFullChannelRequest(
-                channel=group['username']
-            ))
-            if channel.chats[0].call_active == False:
-                db.groups.delete_one({'chat_id': group['chat_id']})
-            else:
-                call = channel.full_chat.call
-
-                group_call = await client(functions.phone.GetGroupCallRequest(
-                    call=call
+            if group['type'] == 'channel' and group['deadline'] < timestamp:
+                channel = await client(functions.channels.GetFullChannelRequest(
+                    channel=group['username']
                 ))
+                if channel.chats[0].call_active == False:
+                    if group['status'] == 'online':
+                        db.groups.update_one({'chat_id': group['chat_id']},
+                            {'$set' : {'status': 'offline'}})
+                else:
+                    call = channel.full_chat.call
 
-                db.groups.update_one({'chat_id': group['chat_id']}, {'$set' :
-                    {'members': group_call.call.participants_count}})
+                    group_call = await client(functions.phone.GetGroupCallRequest(
+                        call=call
+                    ))
 
+                    participants = group_call.call.participants_count
+
+                    if participants == 0:
+                        db.groups.update_one({'chat_id': group['chat_id']},
+                            {'$set' : {'status': 'offline'}})
+                    else:
+                        db.groups.update_one({'chat_id': group['chat_id']}, {'$set' :
+                            {'members': participants, 'status': 'online'}})
+            else:
+                pass
         await asyncio.sleep(10)
 
 

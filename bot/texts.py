@@ -14,7 +14,13 @@ text = {
             'change_category': 'Изменить мои категории',
             'change_language': 'Изменить язык',
             'feedback': 'Обратная связь',
-            'back_to_general': 'Назад'
+            'back_to_general': 'Назад',
+
+            'yes': 'Да',
+            'no': 'Нет',
+
+            'publish': 'Опубликовать',
+            'deny': 'Отказать'
         },
 
         'en': {
@@ -31,7 +37,13 @@ text = {
             'change_category': 'Change my categories',
             'change_language': 'Change the language',
             'feedback': 'Feedback',
-            'back_to_general': 'Back'
+            'back_to_general': 'Back',
+
+            'yes': 'Yes',
+            'no': 'No',
+
+            'publish': 'Publish',
+            'deny': 'Deny'
         }
     },
 

@@ -54,10 +54,11 @@ def check_time():
         timestamp = int(datetime.datetime.timestamp(datetime.datetime.now()))
         timestamp -= 15*60
 
-        groups = db.groups.find({'status': 'offline',
+        groups = db.groups.find({'status': 'offline', 'created': 1,
             'deadline': {'$lt' : timestamp}})
 
         for group in groups:
+            print(group)
             db.active_group.delete_one({'chat_id': group['chat_id']})
             db.groups.delete_one(group)
 
