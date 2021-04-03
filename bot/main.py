@@ -863,8 +863,8 @@ async def get_room_text(msg, chat_id):
         time,
         bold(group['title']),
         group['description'],
-        post_link,
         't.me/' + group['username'] + '?voicechat',
+        post_link,
         ' '.join(list_categories),
 
         sep='\n\n'
