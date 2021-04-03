@@ -583,6 +583,19 @@ async def date_inline(c):
     await change_state(c, 4)
 
 
+async def get_data_str(msg, data):
+    data = data.split()
+    day = data[0]
+    month = data[1]
+    month = await get_text(msg, 'month', month)
+
+    result = day + ' ' + month
+    if len(data) == 3:
+        result += ' ' + data[2]
+
+    return result
+
+
 @dp.callback_query_handler(lambda c:True, state=TestStates.TEST_STATE_2)
 async def inline(c):
     print('inline')
@@ -618,14 +631,13 @@ async def inline(c):
         global days
 
         for day in days:
-            but = types.InlineKeyboardButton(
-                dt.strftime('%-d'), callback_data=day
-            )
+            data_str = await get_data_str(msg, dt.strftime('%-d %B'))
+            but = types.InlineKeyboardButton(data_str, callback_data=day)
             buts.append(but)
             dt += datetime.timedelta(days=1)
 
-        keyboard = types.InlineKeyboardMarkup().row(buts[0], buts[1],
-            buts[2]).row(buts[3], buts[4], buts[5], buts[6])
+        keyboard = types.InlineKeyboardMarkup().row(buts[0], buts[1]).row(
+            buts[2], buts[3]).row(buts[4], buts[5]).row(buts[6])
 
         await bot.send_message(
             user_id,
@@ -835,7 +847,9 @@ async def get_room_text(msg, chat_id):
         '_') for c in list_categories]
 
     time = datetime.datetime.fromtimestamp(
-        group['date'] + 3 * 60 * 60).strftime("%d %B %H:%M")
+        group['date'] + 3 * 60 * 60).strftime("%-d %B %H:%M")
+
+    time = await get_data_str(msg, time)
 
     if group['status'] == 'online':
         time += await get_msg(msg, 'voicechat_started')
@@ -1073,12 +1087,18 @@ async def state_2(msg):
     '''
     await bot.send_message(
         user_id,
-        await get_msg(msg, 'complete'),
+        await get_msg(msg, 'wait'),
         reply_markup=await everytime_keyboard(msg)
     )
     db.active_group.delete_one({'user_id': str(msg.chat.id)})
 
     await send_tginfo(msg, chat_id)
+
+    await bot.send_message(
+        user_id,
+        await get_msg(msg, 'complete'),
+        reply_markup=await everytime_keyboard(msg)
+    )
 
     await change_state(msg, 0)
 

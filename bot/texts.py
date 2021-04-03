@@ -63,5 +63,37 @@ text = {
             'date_time': 'Date and Time:',
             'link': 'Link:'
         }
+    },
+
+    'month': {
+        'ru': {
+            'January': 'Января',
+            'February': 'Февраля',
+            'March': 'Марта',
+            'April': 'Апреля',
+            'May': 'Мая',
+            'June': 'Июня',
+            'July': 'Июля',
+            'August': 'Августа',
+            'Aeptember': 'Сентября',
+            'October': 'Октября',
+            'November': 'Ноября',
+            'December': 'Декабря'
+        },
+
+        'en': {
+            'January': 'January',
+            'Debruary': 'February',
+            'March': 'March',
+            'April': 'April',
+            'May': 'May',
+            'June': 'June',
+            'July': 'July',
+            'August': 'August',
+            'September': 'September',
+            'October': 'October',
+            'November': 'November',
+            'December': 'December'
+        }
     }
 }

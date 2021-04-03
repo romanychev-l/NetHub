@@ -142,6 +142,10 @@ messages = {
 'Отправить сообщение в канал/группу о том, что комната создана?'
 ),
 
+'wait': (
+'Регистрирую комнату. Подождите 15 секунд.'
+),
+
 'complete': (
 'Комната создана!\nВ назначенное время запустите голосовой чат.'
 ),
@@ -293,6 +297,10 @@ messages = {
 
 'publish': (
 'Send a message to the channel / group that the room has been created?'
+),
+
+'wait': (
+'Registering a room. Wait 15 seconds.'
 ),
 
 'complete': (
