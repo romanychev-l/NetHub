@@ -1140,6 +1140,8 @@ async def is_announcement(msg):
     content_types=types.ContentTypes.ANY, state='*')
 async def forward_from_chat(msg):
     print('forward_from_chat')
+    if await check_chat(msg):
+        return
     #if (await check_chat(msg) or await check_member_channel(msg) or
     #    await check_bot_privilege_channel(msg)): return
 
