@@ -79,6 +79,8 @@ async def tg_fm(event):
             'created': 1,
             'title': title,
             'type': 'channel',
+            'description': '',
+            'message_id': 0,
             'username': channel_username
         }
         db.groups.delete_one({'chat_id': channel_id})
