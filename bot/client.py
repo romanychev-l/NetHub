@@ -21,7 +21,7 @@ db = db_client[config.mongo_db_name]
 client = TelegramClient('session_name', api_config.api_id, api_config.api_hash)
 
 
-@client.on(events.NewMessage(chats=('tgbroadcasting')))
+@client.on(events.NewMessage(chats=('nethub_channel')))
 async def tg_fm(event):
     print(event)
     msg = event.message.message
@@ -30,6 +30,7 @@ async def tg_fm(event):
         channel = await client(functions.channels.GetFullChannelRequest(
             channel=channel_username
         ))
+        #print(channel.stringify())
         channel_id = '-100' +  str(channel.full_chat.id)
         if channel.chats[0].call_active == False:
             return
@@ -73,13 +74,13 @@ async def tg_fm(event):
             'admins': [],
             'members': group_call.call.participants_count,
             'subcategories': [],
-            'category_id': -1,
+            'category_id': 13,
             'logo': res,
             'language_code': 'en',
             'created': 1,
             'title': title,
             'type': 'channel',
-            'description': '',
+            'description': channel.full_chat.about,
             'message_id': 0,
             'username': channel_username
         }

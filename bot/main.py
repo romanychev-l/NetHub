@@ -849,10 +849,10 @@ async def get_room_text(msg, chat_id):
     time = datetime.datetime.fromtimestamp(
         group['date'] + 3 * 60 * 60).strftime("%-d %B %H:%M")
 
-    time = await get_data_str(msg, time)
+    title = await get_data_str(msg, time) + ' — ' + bold(group['title'])
 
     if group['status'] == 'online':
-        time += await get_msg(msg, 'voicechat_started')
+        title += '\n\n' +  await get_msg(msg, 'voicechat_started')
 
     post_link = 't.me/' + group['username']
 
@@ -860,8 +860,7 @@ async def get_room_text(msg, chat_id):
         post_link += '/' + str(group['message_id'])
 
     answer = text(
-        time,
-        bold(group['title']),
+        title,
         group['description'],
         't.me/' + group['username'] + '?voicechat',
         post_link,
@@ -912,6 +911,7 @@ async def delete_room(msg):
 @dp.message_handler(state='*', commands=['new_room'])
 async def state_0(msg):
     print('new_room')
+    return
     if (not await check_chat(msg) or await check_member(msg) or
             await check_bot_privilege(msg)): return
 
@@ -969,6 +969,14 @@ async def state_1(msg):
     await change_state(msg, 7)
 
 
+async def delete_link(s):
+    s_list = s.split()
+
+    final_list = [word for word in s_list if not 't.me' in word]
+
+    return ' '.join(final_list)
+
+
 @dp.message_handler(state=TestStates.TEST_STATE_7)
 async def state_1(msg):
     print('state_1')
@@ -979,7 +987,7 @@ async def state_1(msg):
     chat_id = await get_chat_id(user_id)
 
     db.groups.update_one({'chat_id': chat_id},
-                        {'$set': {'description': msg.text}})
+                        {'$set': {'description': await delete_link(msg.text)}})
 
     await bot.send_message(
         user_id,
@@ -1312,6 +1320,12 @@ async def main_logic(msg):
             await bot.send_message(
                 msg.chat.id,
                 await get_msg(msg, 'feedback'),
+                reply_markup=await everytime_keyboard(msg)
+            )
+        else:
+            await bot.send_message(
+                msg.chat.id,
+                await get_msg(msg, 'start_in_chat_with_reg'),
                 reply_markup=await everytime_keyboard(msg)
             )
 

@@ -3,10 +3,10 @@ text = {
         'ru': {
             'complete': 'Завершить',
             'back': 'Назад',
-            'to_hub': 'Каталог голосовых чатов',
+            'to_hub': 'Открыть каталог комнат',
             'create_room_in_group': 'Создать комнату в беседе',
-            'create_room_in_channel': 'Создать комнату в канале',
-            'settings': 'Настройки',
+            'create_room_in_channel': 'Создать комнату',
+            'settings': 'Изменить настройки',
 
             'ok_publish': 'Отправить',
             'nok_publish': 'Не отправлять',
@@ -26,10 +26,10 @@ text = {
         'en': {
             'complete': 'To complete',
             'back': 'Back',
-            'to_hub': 'Voice chat directory',
+            'to_hub': 'Open the catalog of rooms',
             'create_room_in_group': 'Create a chat room',
-            'create_room_in_channel': 'Create a channel room',
-            'settings': 'Settings',
+            'create_room_in_channel': 'Create a room',
+            'settings': 'Change settings',
 
             'ok_publish': 'Send message',
             'nok_publish': 'Do not send',
