@@ -21,7 +21,7 @@ db = db_client[config.mongo_db_name]
 client = TelegramClient('session_name', api_config.api_id, api_config.api_hash)
 
 
-@client.on(events.NewMessage(chats=('nethub_channel')))
+@client.on(events.NewMessage(chats=('tgbroadcasting')))
 async def tg_fm(event):
     print(event)
     msg = event.message.message
