@@ -1217,6 +1217,9 @@ async def voice_chat_ended(msg):
             {"$set": {'status': 'offline'}}
         )
 
+@dp.message_handler(state='*', content_types=['voice_chat_scheduled'])
+async def voice_chat_scheduled(msg):
+    print(msg)
 
 async def update_members_info(msg):
     db.groups.update_one(
@@ -1274,16 +1277,20 @@ async def main_logic(msg):
                 reply_markup=keyboard
             )
         elif msg.text == await get_text(msg, 'buttons', 'settings'):
+            but0 = types.KeyboardButton(await get_text(msg, 'buttons',
+                'memo'))
             but1 = types.KeyboardButton(await get_text(msg, 'buttons',
                 'change_category'))
             but2 = types.KeyboardButton(await get_text(msg, 'buttons',
                 'change_language'))
             but3 = types.KeyboardButton(await get_text(msg, 'buttons',
-                'feedback'))
+                'about_us'))
             but4 = types.KeyboardButton(await get_text(msg, 'buttons',
+                'feedback'))
+            but5 = types.KeyboardButton(await get_text(msg, 'buttons',
                 'back_to_general'))
             settings_keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True,
-                ).add(but1).add(but2).add(but3).add(but4)
+                ).add(but0).add(but1).add(but2).add(but3).add(but4).add(but5)
 
             await bot.send_message(
                 msg.chat.id,
@@ -1320,6 +1327,18 @@ async def main_logic(msg):
             await bot.send_message(
                 msg.chat.id,
                 await get_msg(msg, 'feedback'),
+                reply_markup=await everytime_keyboard(msg)
+            )
+        elif msg.text == await get_text(msg, 'buttons', 'memo'):
+            await bot.send_message(
+                msg.chat.id,
+                await get_msg(msg, 'memo'),
+                reply_markup=await everytime_keyboard(msg)
+            )
+        elif msg.text == await get_text(msg, 'buttons', 'about_us'):
+            await bot.send_message(
+                msg.chat.id,
+                await get_msg(msg, 'about_us'),
                 reply_markup=await everytime_keyboard(msg)
             )
         else:

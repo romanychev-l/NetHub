@@ -11,8 +11,10 @@ text = {
             'ok_publish': 'Отправить',
             'nok_publish': 'Не отправлять',
 
+            'memo': 'Памятка создателям голосовых чатов',
             'change_category': 'Изменить мои категории',
             'change_language': 'Изменить язык',
+            'about_us': 'О нас',
             'feedback': 'Обратная связь',
             'back_to_general': 'Назад',
 
@@ -34,8 +36,10 @@ text = {
             'ok_publish': 'Send message',
             'nok_publish': 'Do not send',
 
+            'memo': 'Memo to Voice Chat Creators',
             'change_category': 'Change my categories',
             'change_language': 'Change the language',
+            'about_us': 'About us',
             'feedback': 'Feedback',
             'back_to_general': 'Back',
 

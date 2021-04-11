@@ -155,6 +155,32 @@ messages = {
 '/new_room - создать новую комнату - текущая комната(если она существует) будет удалена\n'
 '/delete_room - удалить текущую комнату\n'
 '/show_room - показать информацию о текущей комнате\n'
+),
+
+'about_us': (
+'В нашей команде 2 человека:\n\n'
+'Леонид - студент СПбГУ, автор бота @nethub_bot. Личный канал: @romanychev_s_channel\n\n'
+'Александр - студент ИТМО, автор сайта nethub.club. Личный канал: @alek_dev'
+),
+
+'memo': (
+'FAQ: Что нужно знать создателям голосовых чатов?\n\n'
+
+'— Чтобы запустить голосовой чат нужно обновить Telegram до последней версии, зайти в информацию о канале и там нажать - начать голосовой чат.\n\n'
+
+'— Для голосового чата можно задать имя. Отразите в названии голосового чата главную суть вашей встречи со слушателями: укажите название, которое соответствует теме разговора.\n\n'
+
+'— Запускайте собственные аудиочаты в каналах: по сравнению с группами, каналы привлекут большую аудиторию.\n\n'
+
+'— Заранее анонсиуйте голосовой чат, у ваших подписчиков будет время узнать про него, а у вас выстроить план разговора. В анонсе используйте слова "Голосовой чат" — тогда нам будет проще найти ваш анонс и рассказать про него нашим подписчикам.\n\n'
+
+'— Ссылка на голосовые чаты не меняется: если вы хотите пригласить слушателей, просто добавьте к адресу собственного канала ?voicechat. Полная ссылка будет выглядеть так: t.me/voiceinfo?voicechat. Ссылка начнет работать только после старта голосового чата.\n\n'
+
+'- Для спикеров создаются отдельные, персональные ссылки, которые по окончанию голосового чата будут обнулены. Сгенерировать их можно только во время включённого войсчата.\n\n'
+
+'— Голосовой чат можно записать, чтобы в дальнейшем разговор могли послушать другие читатели вашего канала: просто нажмите на кнопку записи голосового чата в самом начале трансляции. О том, что беседа записывается, можно понять по мигающей красной точке сверху чата. Запись голосового чата появится у вас в избранном.\n\n'
+
+'— Если хотите подключить ваших слушателей к разговору —объясните вашим слушателям как это сделать — нажать кнопку поднять руку, а после того как его назначат спикером — активировать микрофон. Также советуйте спикерам, которые не говорят выключать микрофон, чтобы они не портили трансляцию посторонними звуками.'
 )
 },
 'en': {
@@ -312,6 +338,32 @@ messages = {
 '/new_room - create a new room - the current room (if it exists) will be deleted\n'
 '/delete_room - delete the current room\n'
 '/show_room - show information about the current room\n'
+),
+
+'about_us': (
+'There are 2 people in our team:\n\n'
+'Leonid is a student at St. Petersburg State University, the author of the @nethub_bot bot. Personal channel: @romanychev_s_channel\n\n'
+'Alexander is an ITMO student, author of the nethub.club website. Personal channel: @alek_dev'
+),
+
+'memo': (
+'FAQ: What do voice chat creators need to know?\n\n'
+
+'- To start voice chat, you need to update Telegram to the latest version, go to the channel information and press there - start voice chat.\n\n'
+
+'- You can set a name for the voice chat. Reflect the main essence of your meeting with listeners in the name of the voice chat: enter a name that matches the topic of the conversation.\n\n'
+
+'- Launch your own audio chats in channels: compared to groups, channels will attract a larger audience.\n\n'
+
+'- Announce voice chat in advance, your subscribers will have time to learn about it, and you will have to build a conversation plan. In the announcement, use the words "Voice Chat" - then it will be easier for us to find your announcement and tell our subscribers about it.\n\n'
+
+'- The link to voice chats does not change: if you want to invite listeners, just add? Voicechat to your own channel address. The complete link will look like this: t.me/voiceinfo?voicechat. The link will start working only after the start of the voice chat.\n\n'
+
+'- For speakers, separate, personal links are created, which will be reset to zero at the end of the voice chat. They can be generated only during the included voice chat.\n\n'
+
+'- Voice chat can be recorded so that other readers of your channel can listen to the conversation in the future: just click on the voice chat recording button at the very beginning of the broadcast. The fact that the conversation is being recorded can be understood by the flashing red dot at the top of the chat. The voice chat recording will appear in your favorites.\n\n'
+
+'- If you want to connect your listeners to the conversation, explain to your listeners how to do this - press the button to raise your hand, and after he is appointed speaker - activate the microphone. Also advise speakers who do not tell you to turn off the microphone so that they do not spoil the broadcast with extraneous sounds.'
 )
 }
 }
